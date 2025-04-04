@@ -7,3 +7,4 @@ Using New York Active corporation data, publicly available here: https://data.ny
 
 Current database available here: https://utdallas.box.com/s/jb798n26789t146b9bya0p9ft65w7xiw
 
+Members: Luoqi Zhao, Daniel Jones, and Ryan Vera 
