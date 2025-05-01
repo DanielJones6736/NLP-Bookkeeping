@@ -1,0 +1,11 @@
+id,type,amount,source
+1,expense,50.00,Groceries
+2,pay,1500.00,Salary
+3,expense,200.00,Rent
+4,expense,30.00,Utilities
+5,pay,200.00,Freelance Work
+6,expense,15.00,Transportation
+7,expense,100.00,Shopping
+8,pay,500.00,Bonus
+9,expense,25.00,Entertainment
+10,expense,60.00,Internet
