@@ -9,8 +9,8 @@ class Database_Tools:
     def __init__(self):
         file_path = "data\database.csv"
         self.data = self.load_database_to_dict(file_path)
-        # self.current_total = self.calculate_total_amount(self.data)
-        pass
+        self.current_total = self.calculate_total_amount(self.data)
+
 
 
     def load_database_to_dict(self, file_path):
@@ -50,11 +50,11 @@ class Database_Tools:
             float: The total amount calculated from the data.
         """
         total = 0.0
-        for value in data_dict[amount_key]:
+        for key, value in data_dict.items():
             try:
-                total += float(value)
-            except ValueError:
-                raise ValueError(f"Invalid value '{value}' encountered in the '{amount_key}' column.")
+                total += float(value[1])  # Assuming the amount is the second item in the list
+            except (ValueError, IndexError):
+                raise ValueError(f"Invalid or missing amount value for key '{key}'.")
         return total
 
 
@@ -92,4 +92,5 @@ if __name__ == "__main__":
 
     database = Database_Tools()
     print(database)    # Example usage:
+    print(f"Sum of amounts: ${database.current_total}")  # Print the total amount calculated from the database
 
