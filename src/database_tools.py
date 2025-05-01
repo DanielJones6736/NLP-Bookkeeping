@@ -81,7 +81,7 @@ class Database_Tools:
 
 
 
-    def add_data(self, record_type, amount, source):
+    def insert_data(self, record_type, amount, source):
         """
         Adds a new record to the data dictionary.
 
@@ -138,7 +138,9 @@ if __name__ == "__main__":
     database = Database_Tools()
     print(database)
     print(f"Sum of amounts: ${database.current_total}\n")  # Print the total amount calculated from the database
-    database.add_data("expense", 100.00, "Office Supplies")
+
+    database.insert_data("expense", 100.00, "Office Supplies")
     print(database)
     print(f"Sum of amounts: ${database.current_total}\n")  # Print the total amount calculated from the database
+
     database.save_database()
