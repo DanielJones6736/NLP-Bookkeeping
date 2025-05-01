@@ -103,16 +103,22 @@ class Database_Tools:
         self.current_total = self.calculate_total_amount(self.data)  # Update the total amount
 
 
+    
 
     def __str__(self):
         if not self.data:
             return "The database is empty."
 
         # Define the headers
-        headers = ["id", "type", "amount", "source"]
+        headers = ["id", "type", "amount", "source", "date"]
 
         # Prepare rows for display
         rows = [[key] + value for key, value in self.data.items()]
+
+        # Ensure all rows have a date column (default to empty string if missing)
+        for row in rows:
+            if len(row) < len(headers):
+                row.append("")
 
         # Calculate column widths
         max_lengths = [max(len(str(item)) for item in [header] + [row[i] for row in rows]) for i, header in enumerate(headers)]
