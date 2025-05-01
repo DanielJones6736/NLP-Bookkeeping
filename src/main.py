@@ -1,9 +1,96 @@
+from src.config import gemini_api_key
 from fastapi import FastAPI, HTTPException
-from typing import Union
+import base64
+import os
+from google import genai
+from google.genai import types
+
 
 
 app = FastAPI()
 
+gemini_instructions = "You are being used in a bookkeeping personal finance app to perform CRUD operations to a database." \
+" Based on the user input you must choose the appropriate function and populate its parameters. " \
+"The functions are: addExpense(float, location), addPay(float, source)"
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello World..."}
+
+
+
+@app.get("/genai/{prompt}")
+async def genai_api(prompt:str, max_output_tokens:int=1024):
+    """
+    Generate text using Google GenAI API.
+    """
+    # Set up the client
+    client = genai.Client(
+        api_key=gemini_api_key,
+    )
+
+    # response = client.models.generate_content(
+    #     model="gemini-2.0-flash", 
+    #     contents=[gemini_instructions + prompt,]
+    # )
+
+
+
+
+    response = client.models.generate_content(
+        model="gemini-2.0-flash", 
+        contents = [gemini_instructions + prompt],
+        config=types.GenerateContentConfig(
+            tools =[
+                types.Tool(
+                    name="add_expense",
+                    description="Add an expense to the database.",
+                    parameters=types.Schema(
+                        type="OBJECT",
+                        properties={
+                            "amount": types.Schema(type="NUMBER", description="The amount of the expense."),
+                            "location": types.Schema(type="STRING", description="The location of the expense."),
+                        },
+                        required=["amount", "location"],
+                    ),
+                ),
+                types.Tool(
+                    name="add_pay",
+                    description="Add a payment to the database.",
+                    parameters=types.Schema(
+                        type="OBJECT",
+                        properties={
+                            "amount": types.Schema(type="NUMBER", description="The amount of the payment."),
+                            "source": types.Schema(type="STRING", description="The source of the payment."),
+                        },
+                        required=["amount", "source"],
+                    ),
+                ),
+            ]
+        ),
+    )
+    
+
+
+
+
+
+
+    print(response.function_calls[0])
+
+
+
+def add_expense(amount:float, location:str):
+    """
+    Add an expense to the database.
+    """
+    # Logic to add expense to the database
+    return {"message": f"Added expense of {amount} at {location}"}
+
+def add_pay(amount:float, source:str):
+    """
+    Add a payment to the database.
+    """
+    # Logic to add payment to the database
+    return {"message": f"Added payment of {amount} from {source}"}
