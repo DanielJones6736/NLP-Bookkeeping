@@ -3,14 +3,17 @@ import os
 
 class Database_Tools:
 
+    data:dict
+    current_total:float
+
     def __init__(self):
-        file_path = "../data/database.csv"
-        data = self.load_database_to_dict
-        current_total = self.calculate_total_amount(data)
+        file_path = "data\database.csv"
+        self.data = self.load_database_to_dict(file_path)
+        # self.current_total = self.calculate_total_amount(self.data)
         pass
 
 
-    def load_database_to_dict(file_path):
+    def load_database_to_dict(self, file_path):
         """
         Loads data from a CSV file into a dictionary.
 
@@ -18,7 +21,7 @@ class Database_Tools:
             file_path (str): The path to the CSV file.
 
         Returns:
-            dict: A dictionary where the keys are the column headers and the values are lists of column data.
+            dict: A dictionary where the keys are the 'id' column values and the values are lists of the other column data.
         """
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"The file at {file_path} does not exist.")
@@ -27,10 +30,10 @@ class Database_Tools:
         with open(file_path, mode='r', encoding='utf-8') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
-                for key, value in row.items():
-                    if key not in data_dict:
-                        data_dict[key] = []
-                    data_dict[key].append(value)
+                row_id = row.get('id')
+                if row_id is None:
+                    raise KeyError("The CSV file must contain an 'id' column.")
+                data_dict[row_id] = [value for key, value in row.items() if key != 'id']
         return data_dict
 
 
@@ -46,9 +49,6 @@ class Database_Tools:
         Returns:
             float: The total amount calculated from the data.
         """
-        if amount_key not in data_dict:
-            raise KeyError(f"The key '{amount_key}' does not exist in the data dictionary.")
-
         total = 0.0
         for value in data_dict[amount_key]:
             try:
@@ -59,22 +59,34 @@ class Database_Tools:
 
 
 
-    def __str__(self, data):
-        if not data:
+    def __str__(self):
+        if not self.data:
             return "The database is empty."
 
-        # Get the headers
-        headers = list(data.keys())
-        # Get the rows
-        rows = zip(*[data[header] for header in headers])
+        # Define the headers
+        headers = ["id", "type", "amount", "source"]
+
+        # Prepare rows for display
+        rows = [[key] + value for key, value in self.data.items()]
+
+        # Calculate column widths
+        max_lengths = [max(len(str(item)) for item in [header] + [row[i] for row in rows]) for i, header in enumerate(headers)]
 
         # Create a table-like string
-        table = " | ".join(headers) + "\n"  # Header row
-        table += "-+-".join("-" * len(header) for header in headers) + "\n"  # Separator row
-        for row in rows:
-            table += " | ".join(row) + "\n"  # Data rows
+        table = []
 
-        return table.strip()
+        # Add headers
+        header_row = " | ".join(f"{header:<{max_lengths[i]}}" for i, header in enumerate(headers))
+        table.append(header_row)
+        table.append("-+-".join("-" * max_lengths[i] for i in range(len(headers))))
+
+        # Add rows
+        for row in rows:
+            table.append(" | ".join(f"{str(item):<{max_lengths[i]}}" for i, item in enumerate(row)))
+
+        return "\n".join(table)
+
+
 
 if __name__ == "__main__":
 
