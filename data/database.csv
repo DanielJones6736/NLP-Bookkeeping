@@ -1,5 +1,5 @@
-id,type,amount,source,date
-1,expense,50.00,Groceries,2025-01-01
+id,type,amount,source
+1,expense,200.00,Updated Source,2023-10-02
 2,pay,1500.00,Salary,2025-01-02
 3,expense,200.00,Rent,2025-01-03
 4,expense,30.00,Utilities,2025-01-04
@@ -21,4 +21,9 @@ id,type,amount,source,date
 20,expense,40.00,Parking,2025-01-19
 21,expense,100.00,Office Supplies,2025-01-20
 22,expense,100.00,Office Supplies,2025-01-21
-23,expense,100.00,Office Supplies
+23,expense,100.00,Office Supplies,2025-07-04
+24,expense,500.00,Rent,2023-10-01
+25,expense,500.00,Rent,2023-10-01
+26,expense,500.00,Rent,2023-10-01
+27,expense,500.00,Rent,2023-10-01
+28,expense,500.00,Rent,2023-10-01

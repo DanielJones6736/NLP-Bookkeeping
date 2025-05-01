@@ -89,10 +89,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
 
 
 
-    function_call = response.function_calls[0]
-    function_content = response.candidates[0].content
-
-
+    # Call the function based on the response
     if response.candidates[0].content.parts[0].function_call.name == "add_expense":
         function_call = response.candidates[0].content.parts[0].function_call
         print(f"Function call: {function_call.name}")

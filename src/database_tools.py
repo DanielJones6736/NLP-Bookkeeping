@@ -7,7 +7,7 @@ class Database_Tools:
     current_total:float
 
     def __init__(self):
-        file_path = "data\database.csv"
+        file_path = "data\\database.csv"
         self.data = self.load_database_to_dict(file_path)
         self.current_total = self.calculate_total_amount(self.data)
 
@@ -59,7 +59,7 @@ class Database_Tools:
 
 
 
-    def save_database(self, file_path="data\database.csv"):
+    def save_database(self, file_path="data\\database.csv"):
         """
         Overwrites the current data dictionary to a CSV file.
 
@@ -81,29 +81,65 @@ class Database_Tools:
 
 
 
-    def insert_data(self, record_type, amount, source):
+    def insert_data(self, record_type, amount, source:str, date:str):
         """
         Adds a new record to the data dictionary.
 
         Args:
-            record_id (str): The unique identifier for the record.
             record_type (str): The type of the record.
             amount (float): The amount associated with the record.
             source (str): The source of the record.
+            date (str): The date of the record.
 
         Raises:
-            ValueError: If the record_id already exists in the data dictionary.
+            ValueError: If the amount is not a valid number.
         """
         try:
             amount = float(amount)  # Ensure the amount is a valid float
         except ValueError:
             raise ValueError("The amount must be a valid number.")
 
-        self.data[len(self.data)+1] = [record_type, f"{amount:.2f}", source]
+        self.data[len(self.data) + 1] = [record_type, f"{amount:.2f}", source, str(date)]  # Store date as a string
         self.current_total = self.calculate_total_amount(self.data)  # Update the total amount
 
-
     
+
+    def update_data(self, record_id, record_type=None, amount=None, source=None, date=None):
+        """
+        Updates an existing record in the data dictionary.
+
+        Args:
+            record_id (str): The unique identifier for the record to update.
+            record_type (str, optional): The new type of the record.
+            amount (float, optional): The new amount associated with the record.
+            source (str, optional): The new source of the record.
+            date (str, optional): The new date of the record.
+
+        Raises:
+            KeyError: If the record_id does not exist in the data dictionary.
+            ValueError: If the amount is not a valid number.
+        """
+        record_id = str(record_id)  # Ensure record_id is a string
+        if record_id not in self.data:
+            raise KeyError(f"Record with id '{record_id}' does not exist.")
+
+        # Update fields if new values are provided
+        if record_type is not None:
+            self.data[record_id][0] = record_type
+        if amount is not None:
+            try:
+                self.data[record_id][1] = f"{float(amount):.2f}"
+            except ValueError:
+                raise ValueError("The amount must be a valid number.")
+        if source is not None:
+            self.data[record_id][2] = source
+        if date is not None:
+            self.data[record_id][3] = date  # Store date as a string
+
+        # Recalculate the total amount
+        self.current_total = self.calculate_total_amount(self.data)
+
+
 
     def __str__(self):
         if not self.data:
@@ -145,8 +181,9 @@ if __name__ == "__main__":
     print(database)
     print(f"Sum of amounts: ${database.current_total}\n")  # Print the total amount calculated from the database
 
-    database.insert_data("expense", 100.00, "Office Supplies")
+    database.insert_data("expense", 500.00, "Rent", "2023-10-01")
     print(database)
     print(f"Sum of amounts: ${database.current_total}\n")  # Print the total amount calculated from the database
 
-    database.save_database()
+    database.update_data(1, amount=200.00, source="Updated Source", date="2023-10-02")
+    print(database)
