@@ -36,6 +36,32 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
     # )
 
 
+    function_add_expense = types.FunctionDeclaration(
+        name="add_expense",
+        description="Add an expense to the database.",
+        parameters=types.Schema(
+            type="OBJECT",
+            properties={
+                "amount": types.Schema(type="NUMBER", description="The amount of the expense."),
+                "location": types.Schema(type="STRING", description="The location of the expense."),
+            },
+            required=["amount", "location"],
+        ),
+    )
+    function_add_pay = types.FunctionDeclaration(
+        name="add_pay",
+        description="Add a payment to the database.",
+        parameters=types.Schema(
+            type="OBJECT",
+            properties={
+                "amount": types.Schema(type="NUMBER", description="The amount of the payment."),
+                "source": types.Schema(type="STRING", description="The source of the payment."),
+            },
+            required=["amount", "source"],
+        ),
+    )
+    tool = types.Tool(function_declarations=[function_add_expense, function_add_pay])
+
 
 
     response = client.models.generate_content(
@@ -43,41 +69,17 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
         contents = [gemini_instructions + prompt],
         config=types.GenerateContentConfig(
             tools =[
-                types.Tool(
-                    name="add_expense",
-                    description="Add an expense to the database.",
-                    parameters=types.Schema(
-                        type="OBJECT",
-                        properties={
-                            "amount": types.Schema(type="NUMBER", description="The amount of the expense."),
-                            "location": types.Schema(type="STRING", description="The location of the expense."),
-                        },
-                        required=["amount", "location"],
-                    ),
-                ),
-                types.Tool(
-                    name="add_pay",
-                    description="Add a payment to the database.",
-                    parameters=types.Schema(
-                        type="OBJECT",
-                        properties={
-                            "amount": types.Schema(type="NUMBER", description="The amount of the payment."),
-                            "source": types.Schema(type="STRING", description="The source of the payment."),
-                        },
-                        required=["amount", "source"],
-                    ),
-                ),
+                tool,
             ]
         ),
     )
     
 
 
-
-
-
-
     print(response.function_calls[0])
+
+    function_call = response.function_calls[0]
+    function_content = response.candidates[0].content
 
 
 
