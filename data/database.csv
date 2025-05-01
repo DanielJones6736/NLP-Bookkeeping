@@ -9,3 +9,15 @@ id,type,amount,source
 8,pay,500.00,Bonus
 9,expense,25.00,Entertainment
 10,expense,60.00,Internet
+11,expense,45.00,Gas
+12,pay,300.00,Gift
+13,expense,75.00,Medical
+14,expense,20.00,Snacks
+15,pay,1000.00,Investment Return
+16,expense,50.00,Subscription
+17,expense,90.00,Clothing
+18,pay,250.00,Part-time Job
+19,expense,35.00,Books
+20,expense,40.00,Parking
+21,expense,100.00,Office Supplies
+22,expense,100.00,Office Supplies
