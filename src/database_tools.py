@@ -221,6 +221,32 @@ class Database_Tools:
 
 
 
+    def calculate_average_amount(self, record_type=None, month=None, year=None):
+        """
+        Calculates the average amount based on the specified month, year, and record type.
+        If a parameter is missing, it considers all options under that category.
+
+        Args:
+            record_type (str, optional): The type of the record ('expense' or 'payment').
+            month (int, optional): The month for which to calculate the average (1-12).
+            year (int, optional): The year for which to calculate the average.
+
+        Returns:
+            float: The average amount for the specified filters.
+        """
+        filtered_data = self.data
+
+        if record_type is not None:
+            filtered_data = filtered_data[filtered_data['type'].str.lower() == record_type.lower()]
+        if month is not None:
+            filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.month == month]
+        if year is not None:
+            filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.year == year]
+
+        if filtered_data.empty:
+            return 0.0
+
+        return filtered_data['amount'].astype(float).mean()
 
 
 
@@ -237,3 +263,4 @@ if __name__ == "__main__":
     print("\n")
     print("\n")
     print(database.list_sources(month=2, year=2025, record_type="pay"))
+    print(f"Average Amount for October 2023: ${database.calculate_average_amount(month=2, year=2025)}")
