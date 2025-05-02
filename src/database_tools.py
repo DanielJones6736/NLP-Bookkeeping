@@ -190,6 +190,40 @@ class Database_Tools:
         return filtered_data['amount'].astype(float).sum()
 
 
+
+    def list_sources(self, month=None, year=None, record_type=None):
+        """
+        Lists all sources based on the specified month, year, and record type. 
+        If no filters are provided, lists all sources.
+
+        Args:
+            month (int, optional): The month for which to list sources (1-12).
+            year (int, optional): The year for which to list sources.
+            record_type (str, optional): The type of the record ('expense' or 'payment').
+
+        Returns:
+            list: A list of unique sources.
+        """
+        filtered_data = self.data
+
+        if month is not None and year is not None:
+            filtered_data = filtered_data[
+                (pd.to_datetime(filtered_data['date']).dt.month == month) &
+                (pd.to_datetime(filtered_data['date']).dt.year == year)
+            ]
+        elif year is not None:
+            filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.year == year]
+
+        if record_type is not None:
+            filtered_data = filtered_data[filtered_data['type'].str.lower() == record_type.lower()]
+
+        return filtered_data['source'].unique().tolist()
+
+
+
+
+
+
 if __name__ == "__main__":
     database = Database_Tools()
     database.insert_data("expense", 100.50, "Groceries", "2023-10-01")
@@ -200,3 +234,6 @@ if __name__ == "__main__":
     print(f"Total Expenses: ${database.calculate_total_expenses()}")
     print(f"Total Payments: ${database.calculate_total_payments()}")
     print(f"Monthly Total for October 2023: ${database.calculate_monthly_total('expense', 10, 2023)}")
+    print("\n")
+    print("\n")
+    print(database.list_sources(month=2, year=2025, record_type="pay"))
