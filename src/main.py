@@ -9,7 +9,8 @@ from src import database_tools
 app = FastAPI()
 database = database_tools.Database_Tools()
 
-gemini_instructions = "You are being used in a bookkeeping personal finance app to perform CRUD operations to a database." \
+gemini_instructions = \
+"You are being used in a bookkeeping personal finance app to perform CRUD operations to a database." \
 " Based on the user input you must choose the appropriate function and populate its parameters. " \
 "The functions are: " \
 "add_expense(amount:float, location:str, date:str), " \
@@ -23,7 +24,7 @@ gemini_instructions = "You are being used in a bookkeeping personal finance app 
 "get_average_amount(record_type:str, month:int, year:int). " \
 "Make sure to only use the parameters that are needed for the function. " \
 
-
+### NEED TO ADD THE FUNCTION CALLS TO THE DATABASE ###
 def add_expense(amount:float, location:str, date:str):
     """
     Add an expense to the database.
@@ -103,6 +104,7 @@ def get_average_amount(record_type:str, month:int, year:int):
     # Logic to get average amount from the database
     # return {"average_amount": 50}
     return "get_average_amount has been called with the following parameters: " + str(record_type) + ", " + str(month) + ", " + str(year)
+### NEED TO ADD THE FUNCTION CALLS TO THE DATABASE ###
 
 
 
@@ -242,7 +244,6 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
             required=["record_type", "month", "year"],
         ),
     )
-
     tool = types.Tool(function_declarations=[
         function_add_expense, 
         function_add_pay,
@@ -283,8 +284,6 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
         print(f"Function content: {function_call.args}")
         result = add_pay(**function_call.args)
         print(result)
-
-    ### NEED TO ADD THE OTHER FUNCTIONS HERE ###
     elif response.candidates[0].content.parts[0].function_call.name == "update_expense":
         function_call = response.candidates[0].content.parts[0].function_call
         print(f"Function call: {function_call.name}")
