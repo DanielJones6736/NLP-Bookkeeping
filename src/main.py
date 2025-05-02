@@ -17,12 +17,15 @@ gemini_instructions = \
 "add_pay(amount:float, source:str, date:str), " \
 "update_expense(record_id:int, amount:float=None, location:str=None, date:str=None), " \
 "update_pay(record_id:int, amount:float=None, source:str=None, date:str=None), " \
-"delete_record(record_id:int), " \
+"delete_record(record_id:int = None), " \
 "get_total_amount_by_type(record_type:str), " \
 "get_monthly_total(record_type:str, month:int, year:int), " \
 "get_source_list(record_type:str, month:int, year:int), " \
 "get_average_amount(record_type:str, month:int, year:int). " \
 "Make sure to only use the parameters that are needed for the function. " \
+"For delete_record, if the latest record is to be deleted, then record_id should be None or the ID of the record. " \
+
+
 
 ### NEED TO ADD THE FUNCTION CALLS TO THE DATABASE ###
 def add_expense(amount:float, location:str, date:str):
@@ -61,7 +64,7 @@ def update_pay(record_id:int, amount:float=None, source:str=None, date:str=None)
     return "update_pay has been called with the following parameters: " + str(record_id) + ", " + str(amount) + ", " + str(source)
 
 
-def delete_record(record_id:int):
+def delete_record(record_id:int = None):
     """
     Delete an expense from the database.
     """
@@ -191,7 +194,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
             properties={
                 "record_id": types.Schema(type="NUMBER", description="The ID of the record to delete."),
             },
-            required=["record_id"],
+            required=[],
         ),
     )
     function_get_total_amount = types.FunctionDeclaration(

@@ -98,6 +98,7 @@ class Database_Tools:
         }])
         self.data = pd.concat([self.data, new_record], ignore_index=True)
         self.current_total = self.calculate_total_amount()
+        self.save_database()
 
 
 
@@ -134,12 +135,13 @@ class Database_Tools:
             self.data.loc[self.data['id'] == record_id, 'date'] = date
 
         self.current_total = self.calculate_total_amount()
+        self.save_database()
 
 
 
-    def delete_data(self, record_id):
+    def delete_data(self, record_id:int = None):
         """
-        Deletes a record from the DataFrame.
+        Deletes a record from the DataFrame. If no record_id is provided, it deletes the last record.
 
         Args:
             record_id (int): The unique identifier for the record to delete.
@@ -147,11 +149,17 @@ class Database_Tools:
         Raises:
             KeyError: If the record_id does not exist in the DataFrame.
         """
+        if record_id is None:
+            if self.data.empty:
+                raise ValueError("No data to delete.")
+            record_id = self.data['id'].max()
+
         if record_id not in self.data['id'].values:
             raise KeyError(f"Record with id '{record_id}' does not exist.")
 
         self.data = self.data[self.data['id'] != record_id]
         self.current_total = self.calculate_total_amount()
+        self.save_database()
 
 
 
