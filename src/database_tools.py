@@ -1,89 +1,67 @@
-import csv
 import os
+import pandas as pd
 
 class Database_Tools:
 
-    data:dict
-    current_total:float
+    data: pd.DataFrame
+    current_total: float
 
     def __init__(self):
         file_path = "data\\database.csv"
-        self.data = self.load_database_to_dict(file_path)
-        self.current_total = self.calculate_total_amount(self.data)
+        self.data = self.load_database_to_dataframe(file_path)
+        self.current_total = self.calculate_total_amount()
 
 
 
-    def load_database_to_dict(self, file_path):
+    def __str__(self):
+        if self.data.empty:
+            return "The database is empty."
+        df_copy = self.data.copy()
+        df_copy['amount'] = df_copy['amount'].astype(float).map("{:.2f}".format)
+        return df_copy.to_string(index=False)
+
+
+
+    def load_database_to_dataframe(self, file_path):
         """
-        Loads data from a CSV file into a dictionary.
+        Loads data from a CSV file into a Pandas DataFrame.
 
         Args:
             file_path (str): The path to the CSV file.
 
         Returns:
-            dict: A dictionary where the keys are the 'id' column values and the values are lists of the other column data.
+            pd.DataFrame: A DataFrame containing the CSV data.
         """
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"The file at {file_path} does not exist.")
 
-        data_dict = {}
-        with open(file_path, mode='r', encoding='utf-8') as csv_file:
-            reader = csv.DictReader(csv_file)
-            for row in reader:
-                row_id = row.get('id')
-                if row_id is None:
-                    raise KeyError("The CSV file must contain an 'id' column.")
-                data_dict[row_id] = [value for key, value in row.items() if key != 'id']
-        return data_dict
-
-
-
-    def calculate_total_amount(self, data_dict, amount_key="amount"):
-        """
-        Calculates the total amount from the data dictionary.
-
-        Args:
-            data_dict (dict): The dictionary containing the data.
-            amount_key (str): The key in the dictionary that holds the amount values.
-
-        Returns:
-            float: The total amount calculated from the data.
-        """
-        total = 0.0
-        for key, value in data_dict.items():
-            try:
-                total += float(value[1])  # Assuming the amount is the second item in the list
-            except (ValueError, IndexError):
-                raise ValueError(f"Invalid or missing amount value for key '{key}'.")
-        return total
+        try:
+            df = pd.read_csv(file_path)
+            if 'id' not in df.columns:
+                raise KeyError("The CSV file must contain an 'id' column.")
+            return df
+        except Exception as e:
+            raise ValueError(f"Error loading CSV file: {e}")
 
 
 
     def save_database(self, file_path="data\\database.csv"):
         """
-        Overwrites the current data dictionary to a CSV file.
+        Saves the current DataFrame to a CSV file.
 
         Args:
             file_path (str): The path to the CSV file where data will be saved.
         """
-        if not self.data:
+        if self.data.empty:
             raise ValueError("No data to save.")
 
-        # Define the headers
-        headers = ["id", "type", "amount", "source"]
-
-        # Overwrite data in the CSV file
-        with open(file_path, mode='w', encoding='utf-8', newline='') as csv_file:
-            writer = csv.writer(csv_file)
-            writer.writerow(headers)  # Write the header row
-            for key, values in self.data.items():
-                writer.writerow([key] + values)  # Write each row
+        self.data.to_csv(file_path, index=False)
 
 
 
     def insert_data(self, record_type, amount, source:str, date:str):
         """
-        Adds a new record to the data dictionary.
+        Adds a new record to the DataFrame.
 
         Args:
             record_type (str): The type of the record.
@@ -95,95 +73,130 @@ class Database_Tools:
             ValueError: If the amount is not a valid number.
         """
         try:
-            amount = float(amount)  # Ensure the amount is a valid float
+            amount = float(amount)
         except ValueError:
             raise ValueError("The amount must be a valid number.")
+        
+        # If type is expense, convert to negative
+        if record_type.lower() == 'expense':
+            amount = -abs(amount)
 
-        self.data[len(self.data) + 1] = [record_type, f"{amount:.2f}", source, str(date)]  # Store date as a string
-        self.current_total = self.calculate_total_amount(self.data)  # Update the total amount
+        new_id = self.data['id'].max() + 1 if not self.data.empty else 1
 
-    
+        # Convert date to datetime format
+        try:
+            date = pd.to_datetime(date).strftime('%Y-%m-%d')
+        except Exception:
+            raise ValueError("The date must be in a valid format (e.g., YYYY-MM-DD).")
+
+        new_record = pd.DataFrame([{
+            'id': new_id,
+            'type': record_type,
+            'amount': f"{amount:.2f}",
+            'source': source,
+            'date': date
+        }])
+        self.data = pd.concat([self.data, new_record], ignore_index=True)
+        self.current_total = self.calculate_total_amount()
+
+
 
     def update_data(self, record_id, record_type=None, amount=None, source=None, date=None):
         """
-        Updates an existing record in the data dictionary.
+        Updates an existing record in the DataFrame.
 
         Args:
-            record_id (str): The unique identifier for the record to update.
+            record_id (int): The unique identifier for the record to update.
             record_type (str, optional): The new type of the record.
             amount (float, optional): The new amount associated with the record.
             source (str, optional): The new source of the record.
             date (str, optional): The new date of the record.
 
         Raises:
-            KeyError: If the record_id does not exist in the data dictionary.
+            KeyError: If the record_id does not exist in the DataFrame.
             ValueError: If the amount is not a valid number.
         """
-        record_id = str(record_id)  # Ensure record_id is a string
-        if record_id not in self.data:
+        if record_id not in self.data['id'].values:
             raise KeyError(f"Record with id '{record_id}' does not exist.")
 
-        # Update fields if new values are provided
         if record_type is not None:
-            self.data[record_id][0] = record_type
+            self.data.loc[self.data['id'] == record_id, 'type'] = record_type
         if amount is not None:
+            if record_type.lower() == 'expense':
+                amount = -abs(float(amount))
             try:
-                self.data[record_id][1] = f"{float(amount):.2f}"
+                self.data.loc[self.data['id'] == record_id, 'amount'] = f"{float(amount):.2f}"
             except ValueError:
                 raise ValueError("The amount must be a valid number.")
         if source is not None:
-            self.data[record_id][2] = source
+            self.data.loc[self.data['id'] == record_id, 'source'] = source
         if date is not None:
-            self.data[record_id][3] = date  # Store date as a string
+            self.data.loc[self.data['id'] == record_id, 'date'] = date
 
-        # Recalculate the total amount
-        self.current_total = self.calculate_total_amount(self.data)
-
+        self.current_total = self.calculate_total_amount()
 
 
-    def __str__(self):
-        if not self.data:
-            return "The database is empty."
 
-        # Define the headers
-        headers = ["id", "type", "amount", "source", "date"]
+    def calculate_total_amount(self):
+        """
+        Calculates the total amount from the DataFrame.
 
-        # Prepare rows for display
-        rows = [[key] + value for key, value in self.data.items()]
+        Returns:
+            float: The total amount calculated from the data.
+        """
+        return self.data['amount'].astype(float).sum()
 
-        # Ensure all rows have a date column (default to empty string if missing)
-        for row in rows:
-            if len(row) < len(headers):
-                row.append("")
 
-        # Calculate column widths
-        max_lengths = [max(len(str(item)) for item in [header] + [row[i] for row in rows]) for i, header in enumerate(headers)]
 
-        # Create a table-like string
-        table = []
+    def calculate_total_expenses(self):
+        """
+        Calculates the total amount of expenses from the DataFrame.
 
-        # Add headers
-        header_row = " | ".join(f"{header:<{max_lengths[i]}}" for i, header in enumerate(headers))
-        table.append(header_row)
-        table.append("-+-".join("-" * max_lengths[i] for i in range(len(headers))))
+        Returns:
+            float: The total amount of expenses.
+        """
+        return self.data[self.data['type'].str.lower() == 'expense']['amount'].astype(float).sum()
 
-        # Add rows
-        for row in rows:
-            table.append(" | ".join(f"{str(item):<{max_lengths[i]}}" for i, item in enumerate(row)))
 
-        return "\n".join(table)
 
+    def calculate_total_payments(self):
+        """
+        Calculates the total amount of payments from the DataFrame.
+
+        Returns:
+            float: The total amount of payments.
+        """
+        return self.data[self.data['type'].str.lower() == 'pay']['amount'].astype(float).sum()
+
+
+
+    def calculate_monthly_total(self, record_type: str, month: int, year: int):
+        """
+        Calculates the total amount of a specific record type for a given month and year.
+
+        Args:
+            record_type (str): The type of the record ('expense' or 'payment').
+            month (int): The month for which to calculate the total (1-12).
+            year (int): The year for which to calculate the total.
+
+        Returns:
+            float: The total amount for the specified record type and month.
+        """
+        filtered_data = self.data[
+            (self.data['type'].str.lower() == record_type.lower()) &
+            (pd.to_datetime(self.data['date']).dt.month == month) &
+            (pd.to_datetime(self.data['date']).dt.year == year)
+        ]
+        return filtered_data['amount'].astype(float).sum()
 
 
 if __name__ == "__main__":
-
     database = Database_Tools()
+    database.insert_data("expense", 100.50, "Groceries", "2023-10-01")
     print(database)
-    print(f"Sum of amounts: ${database.current_total}\n")  # Print the total amount calculated from the database
 
-    database.insert_data("expense", 500.00, "Rent", "2023-10-01")
-    print(database)
-    print(f"Sum of amounts: ${database.current_total}\n")  # Print the total amount calculated from the database
-
-    database.update_data(1, amount=200.00, source="Updated Source", date="2023-10-02")
-    print(database)
+    print(f"Sum of amounts: ${database.current_total}")
+    print(f"Sum of amounts: ${database.calculate_total_amount()}")
+    print(f"Total Expenses: ${database.calculate_total_expenses()}")
+    print(f"Total Payments: ${database.calculate_total_payments()}")
+    print(f"Monthly Total for October 2023: ${database.calculate_monthly_total('expense', 10, 2023)}")
