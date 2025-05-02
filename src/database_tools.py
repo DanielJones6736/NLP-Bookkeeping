@@ -155,36 +155,20 @@ class Database_Tools:
 
 
 
-    def calculate_total_amount(self):
+    def calculate_total_amount(self, record_type=None):
         """
-        Calculates the total amount from the DataFrame.
+        Calculates the total amount from the DataFrame. If a record type is specified,
+        calculates the total for that type only.
+
+        Args:
+            record_type (str, optional): The type of the record ('expense' or 'pay').
 
         Returns:
             float: The total amount calculated from the data.
         """
-        return self.data['amount'].astype(float).sum()
-
-
-
-    def calculate_total_expenses(self):
-        """
-        Calculates the total amount of expenses from the DataFrame.
-
-        Returns:
-            float: The total amount of expenses.
-        """
-        return self.data[self.data['type'].str.lower() == 'expense']['amount'].astype(float).sum()
-
-
-
-    def calculate_total_payments(self):
-        """
-        Calculates the total amount of payments from the DataFrame.
-
-        Returns:
-            float: The total amount of payments.
-        """
-        return self.data[self.data['type'].str.lower() == 'pay']['amount'].astype(float).sum()
+        if record_type is None:
+            return self.data['amount'].astype(float).sum()
+        return self.data[self.data['type'].str.lower() == record_type.lower()]['amount'].astype(float).sum()
 
 
 
@@ -209,7 +193,7 @@ class Database_Tools:
 
 
 
-    def list_sources(self, month=None, year=None, record_type=None):
+    def list_sources(self, record_type=None, month=None, year=None):
         """
         Lists all sources based on the specified month, year, and record type. 
         If no filters are provided, lists all sources.
@@ -275,8 +259,6 @@ if __name__ == "__main__":
 
     print(f"Sum of amounts: ${database.current_total}")
     print(f"Sum of amounts: ${database.calculate_total_amount()}")
-    print(f"Total Expenses: ${database.calculate_total_expenses()}")
-    print(f"Total Payments: ${database.calculate_total_payments()}")
     print(f"Monthly Total for October 2023: ${database.calculate_monthly_total('expense', 10, 2023)}")
     print("\n")
     print("\n")
