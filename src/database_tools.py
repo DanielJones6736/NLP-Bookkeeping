@@ -137,6 +137,24 @@ class Database_Tools:
 
 
 
+    def delete_data(self, record_id):
+        """
+        Deletes a record from the DataFrame.
+
+        Args:
+            record_id (int): The unique identifier for the record to delete.
+
+        Raises:
+            KeyError: If the record_id does not exist in the DataFrame.
+        """
+        if record_id not in self.data['id'].values:
+            raise KeyError(f"Record with id '{record_id}' does not exist.")
+
+        self.data = self.data[self.data['id'] != record_id]
+        self.current_total = self.calculate_total_amount()
+
+
+
     def calculate_total_amount(self):
         """
         Calculates the total amount from the DataFrame.
