@@ -2,14 +2,26 @@ from src.config import gemini_api_key
 from fastapi import FastAPI, HTTPException
 from google import genai
 from google.genai import types
+from src import database_tools
 
 
 
 app = FastAPI()
+database = database_tools.Database_Tools()
 
 gemini_instructions = "You are being used in a bookkeeping personal finance app to perform CRUD operations to a database." \
 " Based on the user input you must choose the appropriate function and populate its parameters. " \
-"The functions are: addExpense(float, location), addPay(float, source)"
+"The functions are: " \
+"add_expense(amount:float, location:str, date:str), " \
+"add_pay(amount:float, source:str, date:str), " \
+"update_expense(record_id:int, amount:float=None, location:str=None, date:str=None), " \
+"update_pay(record_id:int, amount:float=None, source:str=None, date:str=None), " \
+"delete_record(record_id:int), " \
+"get_total_amount_by_type(record_type:str), " \
+"get_monthly_total(record_type:str, month:int, year:int), " \
+"get_source_list(record_type:str, month:int, year:int), " \
+"get_average_amount(record_type:str, month:int, year:int). " \
+"Make sure to only use the parameters that are needed for the function. " \
 
 
 def add_expense(amount:float, location:str, date:str):
@@ -21,7 +33,6 @@ def add_expense(amount:float, location:str, date:str):
     return "add_expense has been called with the following parameters: " + str(amount) + ", " + str(location)
 
 
-
 def add_pay(amount:float, source:str, date:str):
     """
     Add a payment to the database.
@@ -29,7 +40,6 @@ def add_pay(amount:float, source:str, date:str):
     # Logic to add payment to the database
     # return {"message": f"Added payment of {amount} from {source}"}
     return "add_pay has been called with the following parameters: " + str(amount) + ", " + str(source)
-
 
 
 def update_expense(record_id:int, amount:float=None, location:str=None, date:str=None):
@@ -57,15 +67,6 @@ def delete_record(record_id:int):
     # Logic to delete expense from the database
     # return {"message": f"Deleted expense with ID {record_id}"}
     return "delete_record has been called with the following parameters: " + str(record_id)
-
-
-def get_total_amount():
-    """
-    Get the total amount of expenses in the database.
-    """
-    # Logic to get total amount from the database
-    # return {"total_amount": 1000}
-    return "get_total_amount has been called"
 
 
 def get_total_amount_by_type(record_type:str):
@@ -182,7 +183,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
     )
     function_delete_record = types.FunctionDeclaration(
         name="delete_record",
-        description="Delete an expense from the database.",
+        description="Delete a record from the database.",
         parameters=types.Schema(
             type="OBJECT",
             properties={
@@ -192,8 +193,8 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
         ),
     )
     function_get_total_amount = types.FunctionDeclaration(
-        name="get_total_amount",
-        description="Get the total amount of expenses in the database.",
+        name="get_total_amount_by_type",
+        description="Get the total amount of a record type in the database.",
         parameters=types.Schema(
             type="OBJECT",
             properties={
@@ -282,6 +283,49 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
         print(f"Function content: {function_call.args}")
         result = add_pay(**function_call.args)
         print(result)
+
+    ### NEED TO ADD THE OTHER FUNCTIONS HERE ###
+    elif response.candidates[0].content.parts[0].function_call.name == "update_expense":
+        function_call = response.candidates[0].content.parts[0].function_call
+        print(f"Function call: {function_call.name}")
+        print(f"Function content: {function_call.args}")
+        result = update_expense(**function_call.args)
+        print(result)
+    elif response.candidates[0].content.parts[0].function_call.name == "update_pay":
+        function_call = response.candidates[0].content.parts[0].function_call
+        print(f"Function call: {function_call.name}")
+        print(f"Function content: {function_call.args}")
+        result = update_pay(**function_call.args)
+        print(result)
+    elif response.candidates[0].content.parts[0].function_call.name == "delete_record":
+        function_call = response.candidates[0].content.parts[0].function_call
+        print(f"Function call: {function_call.name}")
+        print(f"Function content: {function_call.args}")
+        result = delete_record(**function_call.args)
+        print(result)
+    elif response.candidates[0].content.parts[0].function_call.name == "get_total_amount_by_type":
+        function_call = response.candidates[0].content.parts[0].function_call
+        print(f"Function call: {function_call.name}")
+        print(f"Function content: {function_call.args}")
+        result = get_total_amount_by_type(**function_call.args)
+        print(result)
+    elif response.candidates[0].content.parts[0].function_call.name == "get_monthly_total":
+        function_call = response.candidates[0].content.parts[0].function_call
+        print(f"Function call: {function_call.name}")
+        print(f"Function content: {function_call.args}")
+        result = get_monthly_total(**function_call.args)
+        print(result)
+    elif response.candidates[0].content.parts[0].function_call.name == "get_source_list":
+        function_call = response.candidates[0].content.parts[0].function_call
+        print(f"Function call: {function_call.name}")
+        print(f"Function content: {function_call.args}")
+        result = get_source_list(**function_call.args)
+        print(result)
+    elif response.candidates[0].content.parts[0].function_call.name == "get_average_amount":
+        function_call = response.candidates[0].content.parts[0].function_call
+        print(f"Function call: {function_call.name}")
+        print(f"Function content: {function_call.args}")
+        result = get_average_amount(**function_call.args)
     else:
         raise HTTPException(status_code=400, detail="Invalid function call")
 
