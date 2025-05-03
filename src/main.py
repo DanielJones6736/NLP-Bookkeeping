@@ -23,6 +23,8 @@ gemini_instructions = \
 "get_source_list(record_type:str, month:int, year:int) -> list, " \
 "get_average_amount(record_type:str, month:int, year:int) -> float, " \
 "get_transaction_history(record_type:str=None, month:int=None, year:int=None, file_format:str='json') -> Any. " \
+"ai_analyze(record_type:str, month:int, year:int, question:str) -> Any. " \
+"For any prompt that doesn't fall into any of the functions above, call the ai_analyze function. " \
 "Make sure to only use the parameters that are needed for the function. " \
 "For delete_record, if the latest record is to be deleted, then record_id should be None or the ID of the record. " \
 "If no user input is provided, use the parameter value None " \
@@ -214,6 +216,50 @@ def get_transaction_history(record_type:str=None, month:int=None, year:int=None,
     return database.export_data(file_format=file_format, record_type=record_type, month=month, year=year)
 
 
+def ai_analyze(question: str, record_type:str=None, month:int=None, year:int=None):
+    """
+    Retrieves transaction history and analyzes it using Gemini AI.
+
+    Args:
+        record_type (str): The type of transaction records to retrieve (e.g., "income", "expense").
+        month (int): The month for which to retrieve transaction history (1-12).
+        year (int): The year for which to retrieve transaction history.
+        question (str): The question to analyze the transaction data.
+
+    Returns:
+        dict: The analysis result from Gemini AI.
+    """
+    print(f"ai_analyze has been called with the following parameters: {str(record_type)}, {str(month)}, {str(year)}, {str(question)}")
+
+    # Retrieve transaction history
+    transaction_history = database.export_data(
+        file_format="csv", record_type=record_type, month=month, year=year
+    )
+
+    if not transaction_history:
+        raise HTTPException(status_code=404, detail="No transaction history found.")
+
+    # Set up the client
+    client = genai.Client(api_key=gemini_api_key)
+
+    # Prepare the prompt for analysis
+    analysis_prompt = (
+        f"Here is the transaction history in CSV format: {transaction_history}\n"
+        f"Question: {question}\n"
+        f"Provide a detailed analysis based on the data that answers the prompted question."
+    )
+
+    # Generate content using the model
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=[analysis_prompt],
+        config=types.GenerateContentConfig(),
+    )
+
+    # Return the analysis result
+    analysis_result = response.candidates[0].content.parts[0].text.strip()
+    return {"status": "success", "analysis": analysis_result}
+
 
 
 @app.get("/")
@@ -226,7 +272,7 @@ async def health_check():
 
 
 @app.get("/genai/{prompt}")
-async def genai_api(prompt:str, max_output_tokens:int=1024):
+async def genai_api(prompt:str, max_output_tokens:int=512):
     """
     Generate text using Google GenAI API.
     """
@@ -365,6 +411,20 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
             required=[],
         ),
     )
+    function_ai_analyze = types.FunctionDeclaration(
+        name="ai_analyze",
+        description="Analyze transaction history using AI.",
+        parameters=types.Schema(
+            type="OBJECT",
+            properties={
+                "question": types.Schema(type="STRING", description="The question to analyze the transaction data."),
+                "record_type": types.Schema(type="STRING", description="The type of transaction records to retrieve (e.g., 'income', 'expense')."),
+                "month": types.Schema(type="NUMBER", description="The month for which to retrieve transaction history (1-12)."),
+                "year": types.Schema(type="NUMBER", description="The year for which to retrieve transaction history."),
+            },
+            required=["question"],
+        ),
+    )
     tool = types.Tool(function_declarations=[
         function_add_expense, 
         function_add_pay,
@@ -375,7 +435,8 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
         function_get_monthly_total,
         function_get_source_list,
         function_get_average_amount,
-        function_get_transaction_history
+        function_get_transaction_history,
+        function_ai_analyze
     ])
 
 
@@ -404,6 +465,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
         "get_source_list": get_source_list,
         "get_average_amount": get_average_amount,
         "get_transaction_history": get_transaction_history,
+        "ai_analyze": ai_analyze,
     }
     
     # Call the function based on the response
