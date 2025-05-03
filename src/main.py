@@ -26,25 +26,26 @@ gemini_instructions = \
 "Make sure to only use the parameters that are needed for the function. " \
 "For delete_record, if the latest record is to be deleted, then record_id should be None or the ID of the record. " \
 "If no user input is provided, use the parameter value None " \
+"Try to convert relative dates into absolute dates. Example, tody equals yyyy-mm-dd" \
 "User prompt: "
 
 
 
-def add_expense(amount:float, location:str, date:str):
+def add_expense(amount:float, source:str, date:str):
     """
     Adds an expense record to the database.
 
     Args:
         amount (float): The monetary value of the expense.
-        location (str): The location where the expense occurred.
+        source (str): The source where the expense occurred.
         date (str): The date of the expense in string format (e.g., 'YYYY-MM-DD').
 
     Returns:
         bool: True if the expense was successfully added to the database, False otherwise.
     """
     # Logic to add expense to the database
-    print(f"add_expense has been called with the following parameters: {str(amount)}, {str(location)}")
-    return database.insert_data("expense", amount=amount, location=location, date=date)
+    print(f"add_expense has been called with the following parameters: {str(amount)}, {str(source)}")
+    return database.insert_data("expense", amount=amount, source=source, date=date)
 
 
 def add_pay(amount: float, source: str, date: str):
@@ -58,10 +59,11 @@ def add_pay(amount: float, source: str, date: str):
         bool: True if the payment was successfully added to the database, False otherwise.
     """
     # Logic to add payment to the database
-    print(f"add_pay has been called with the following parameters: {str(amount)}, {str(source)}")
+    print(f"add_pay has been called with the following parameters: {str(amount)}, {str(source)}, {str(date)}")
     return database.insert_data("pay", amount=amount, source=source, date=date)
 
-
+### THIS IMPLEMENTATION MIGHT NEED TO BE CHANGED TO DELETE THEN INSERT ###
+### GEMINI DID NOT RECOGNIZE THE PROMPT FOR THIS FUNCTION ###
 def update_expense(record_id:int, amount:float=None, source:str=None, date:str=None):
     """
     Parameters:
@@ -78,6 +80,8 @@ def update_expense(record_id:int, amount:float=None, source:str=None, date:str=N
     return database.update_data(record_type="expense", record_id=record_id, amount=amount, source=source, date=date)
 
 
+### THIS IMPLEMENTATION MIGHT NEED TO BE CHANGED TO DELETE THEN INSERT ###
+### GEMINI DID NOT RECOGNIZE THE PROMPT FOR THIS FUNCTION ###
 def update_pay(record_id:int, amount:float=None, source:str=None, date:str=None):
     """
     Updates an existing payment record in the database.
@@ -188,7 +192,7 @@ def get_average_amount(record_type:str, month:int, year:int):
     return database.calculate_average_amount(record_type=record_type, month=month, year=year)
 
 
-def get_transaction_history(record_type:str=None, month:int=None, year:int=None, file_format:str="json"):
+def get_transaction_history(record_type:str=None, month:int=None, year:int=None, file_format:str="list"):
     """
     Retrieves the transaction history from the database based on the specified parameters.
 
@@ -239,10 +243,10 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
             type="OBJECT",
             properties={
                 "amount": types.Schema(type="NUMBER", description="The amount of the expense."),
-                "location": types.Schema(type="STRING", description="The location of the expense."),
+                "source": types.Schema(type="STRING", description="The source of the expense."),
                 "date": types.Schema(type="STRING", description="The date of the expense."),
             },
-            required=["amount", "location", "date"],
+            required=["amount", "source", "date"],
         ),
     )
     function_add_pay = types.FunctionDeclaration(

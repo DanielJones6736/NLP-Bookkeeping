@@ -99,6 +99,7 @@ class Database_Tools:
         self.data = pd.concat([self.data, new_record], ignore_index=True)
         self.current_total = self.calculate_total_amount()
         self.save_database()
+        return f"Record added successfully. ID: {new_id}, Type: {record_type}, Amount: {amount:.2f}, Source: {source}, Date: {date}"
 
 
 
@@ -138,7 +139,7 @@ class Database_Tools:
             
         if source is not None:
             self.data.loc[self.data['id'] == record_id, 'source'] = source
-            
+
         if date is not None:
             self.data.loc[self.data['id'] == record_id, 'date'] = date
 
@@ -265,7 +266,7 @@ class Database_Tools:
         if filtered_data.empty:
             return 0.0
 
-        return filtered_data['amount'].astype(float).mean()
+        return round(filtered_data['amount'].astype(float).mean(), 2)
 
 
 
@@ -297,6 +298,8 @@ class Database_Tools:
             return filtered_data.to_json(orient="records", date_format="iso")
         elif file_format.lower() == "csv":
             return filtered_data.to_csv(index=False)
+        elif file_format.lower() == "list":
+            return filtered_data.values.tolist()
         else:
             raise ValueError("Invalid file format. Please choose 'json' or 'csv'.")
 

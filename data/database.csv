@@ -44,4 +44,5 @@ id,type,amount,source,date
 43,expense,-100.5,Groceries,2023-10-01
 44,expense,-100.5,Groceries,2023-10-01
 45,expense,-100.5,Groceries,2023-10-01
-46,expense,-100.50,Groceries,2023-10-01
+46,expense,-100.5,Groceries,2023-10-01
+47,expense,-50.0,Walmart,2025-05-03
