@@ -102,7 +102,7 @@ class Database_Tools:
 
 
 
-    def update_data(self, record_id, record_type=None, amount=None, source=None, date=None):
+    def update_data(self, record_id:int=None, record_type:str=None, amount:float=None, source:str=None, date:str=None):
         """
         Updates an existing record in the DataFrame.
 
@@ -117,6 +117,11 @@ class Database_Tools:
             KeyError: If the record_id does not exist in the DataFrame.
             ValueError: If the amount is not a valid number.
         """
+        if record_id is None:
+            if self.data.empty:
+                raise ValueError("No data to update.")
+            record_id = self.data['id'].max()
+
         if record_id not in self.data['id'].values:
             raise KeyError(f"Record with id '{record_id}' does not exist.")
 
@@ -180,23 +185,28 @@ class Database_Tools:
 
 
 
-    def calculate_monthly_total(self, record_type: str, month: int, year: int):
+    def calculate_monthly_total(self, record_type:str=None, month:int=None, year:int=None):
         """
         Calculates the total amount of a specific record type for a given month and year.
+        If an argument is missing, it considers all options under that category.
 
         Args:
-            record_type (str): The type of the record ('expense' or 'payment').
-            month (int): The month for which to calculate the total (1-12).
-            year (int): The year for which to calculate the total.
+            record_type (str, optional): The type of the record ('expense' or 'payment').
+            month (int, optional): The month for which to calculate the total (1-12).
+            year (int, optional): The year for which to calculate the total.
 
         Returns:
-            float: The total amount for the specified record type and month.
+            float: The total amount for the specified filters.
         """
-        filtered_data = self.data[
-            (self.data['type'].str.lower() == record_type.lower()) &
-            (pd.to_datetime(self.data['date']).dt.month == month) &
-            (pd.to_datetime(self.data['date']).dt.year == year)
-        ]
+        filtered_data = self.data
+
+        if record_type is not None:
+            filtered_data = filtered_data[filtered_data['type'].str.lower() == record_type.lower()]
+        if month is not None:
+            filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.month == month]
+        if year is not None:
+            filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.year == year]
+
         return filtered_data['amount'].astype(float).sum()
 
 
@@ -216,14 +226,10 @@ class Database_Tools:
         """
         filtered_data = self.data
 
-        if month is not None and year is not None:
-            filtered_data = filtered_data[
-                (pd.to_datetime(filtered_data['date']).dt.month == month) &
-                (pd.to_datetime(filtered_data['date']).dt.year == year)
-            ]
-        elif year is not None:
+        if month is not None:
+            filtered_data = filtered_data[(pd.to_datetime(filtered_data['date']).dt.month == month)]
+        if year is not None:
             filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.year == year]
-
         if record_type is not None:
             filtered_data = filtered_data[filtered_data['type'].str.lower() == record_type.lower()]
 
@@ -259,7 +265,8 @@ class Database_Tools:
         return filtered_data['amount'].astype(float).mean()
 
 
-    def export_data(self, file_format="json", month=None, year=None):
+
+    def export_data(self, file_format="json", record_type:str=None, month=None, year=None):
         """
         Exports the DataFrame as a JSON or CSV string, with optional filtering by month and year.
 
@@ -276,6 +283,8 @@ class Database_Tools:
         """
         filtered_data = self.data
 
+        if record_type is not None:
+            filtered_data = filtered_data[filtered_data['type'].str.lower() == record_type.lower()]
         if month is not None:
             filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.month == month]
         if year is not None:

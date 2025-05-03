@@ -13,16 +13,16 @@ gemini_instructions = \
 "You are being used in a bookkeeping personal finance app to perform CRUD operations to a database." \
 " Based on the user input you must choose the appropriate function and populate its parameters. " \
 "The functions are: " \
-"add_expense(amount:float, location:str, date:str), " \
-"add_pay(amount:float, source:str, date:str), " \
-"update_expense(record_id:int, amount:float=None, location:str=None, date:str=None), " \
-"update_pay(record_id:int, amount:float=None, source:str=None, date:str=None), " \
-"delete_record(record_id:int = None), " \
-"get_total_amount_by_type(record_type:str), " \
-"get_monthly_total(record_type:str, month:int, year:int), " \
-"get_source_list(record_type:str, month:int, year:int), " \
-"get_average_amount(record_type:str, month:int, year:int). " \
-"get_transaction_history(record_type:str, month:int, year:int). " \
+"add_expense(amount:float, location:str, date:str) -> bool, " \
+"add_pay(amount:float, source:str, date:str) -> bool, " \
+"update_expense(record_id:int, amount:float=None, location:str=None, date:str=None) -> bool, " \
+"update_pay(record_id:int, amount:float=None, source:str=None, date:str=None) -> bool, " \
+"delete_record(record_id:int = None) -> bool, " \
+"get_total_amount_by_type(record_type:str=None) -> float, " \
+"get_monthly_total(record_type:str=None, month:int=None, year:int=None) -> float, " \
+"get_source_list(record_type:str, month:int, year:int) -> list, " \
+"get_average_amount(record_type:str, month:int, year:int) -> float, " \
+"get_transaction_history(record_type:str=None, month:int=None, year:int=None, file_format:str='json') -> Any. " \
 "Make sure to only use the parameters that are needed for the function. " \
 "For delete_record, if the latest record is to be deleted, then record_id should be None or the ID of the record. " \
 "If no user input is provided, use the parameter value None " \
@@ -30,96 +30,184 @@ gemini_instructions = \
 
 
 
-### NEED TO ADD THE FUNCTION CALLS TO THE DATABASE ###
 def add_expense(amount:float, location:str, date:str):
     """
-    Add an expense to the database.
+    Adds an expense record to the database.
+
+    Args:
+        amount (float): The monetary value of the expense.
+        location (str): The location where the expense occurred.
+        date (str): The date of the expense in string format (e.g., 'YYYY-MM-DD').
+
+    Returns:
+        bool: True if the expense was successfully added to the database, False otherwise.
     """
     # Logic to add expense to the database
-    # return {"message": f"Added expense of {amount} at {location}"}
-    return "add_expense has been called with the following parameters: " + str(amount) + ", " + str(location)
+    print(f"add_expense has been called with the following parameters: {str(amount)}, {str(location)}")
+    return database.insert_data("expense", amount=amount, location=location, date=date)
 
 
-def add_pay(amount:float, source:str, date:str):
+def add_pay(amount: float, source: str, date: str):
     """
-    Add a payment to the database.
+    Adds a payment record to the database.
+    Args:
+        amount (float): The amount of the payment.
+        source (str): The source or description of the payment.
+        date (str): The date of the payment in string format.
+    Returns:
+        bool: True if the payment was successfully added to the database, False otherwise.
     """
     # Logic to add payment to the database
-    # return {"message": f"Added payment of {amount} from {source}"}
-    return "add_pay has been called with the following parameters: " + str(amount) + ", " + str(source)
+    print(f"add_pay has been called with the following parameters: {str(amount)}, {str(source)}")
+    return database.insert_data("pay", amount=amount, source=source, date=date)
 
 
 def update_expense(record_id:int, amount:float=None, location:str=None, date:str=None):
     """
-    Update an existing expense in the database.
+    Parameters:
+        record_id (int): The unique identifier of the expense record to update.
+        amount (float, optional): The new amount for the expense. Defaults to None.
+        location (str, optional): The new location associated with the expense. Defaults to None.
+        date (str, optional): The new date of the expense in 'YYYY-MM-DD' format. Defaults to None.
+
+    Returns:
+        bool: True if the update was successful, False otherwise.
     """
     # Logic to update expense in the database
-    # return {"message": f"Updated expense with ID {record_id}"}
-    return "update_expense has been called with the following parameters: " + str(record_id) + ", " + str(amount) + ", " + str(location)
+    print(f"update_expense has been called with the following parameters: {str(record_id)}, {str(amount)}, {str(location)}, {str(date)}")
+    return database.update_data("expense", record_id=record_id, amount=amount, location=location, date=date)
 
 
 def update_pay(record_id:int, amount:float=None, source:str=None, date:str=None):
     """
-    Update an existing payment in the database.
+    Updates an existing payment record in the database.
+
+    Args:
+        record_id (int): The unique identifier of the payment record to update.
+        amount (float, optional): The new payment amount. Defaults to None.
+        source (str, optional): The source or description of the payment. Defaults to None.
+        date (str, optional): The date of the payment in string format. Defaults to None.
+
+    Returns:
+        bool: True if the update was successful, False otherwise.
     """
     # Logic to update payment in the database
-    # return {"message": f"Updated payment with ID {record_id}"}
-    return "update_pay has been called with the following parameters: " + str(record_id) + ", " + str(amount) + ", " + str(source)
-
+    print(f"update_pay has been called with the following parameters: {str(record_id)}, {str(amount)}, {str(source)}, {str(date)}")
+    return database.update_data("pay", record_id=record_id, amount=amount, source=source, date=date)
 
 def delete_record(record_id:int = None):
     """
-    Delete an expense from the database.
+    Deletes a record from the database.
+
+    Args:
+        record_id (int, optional): The unique identifier of the record to be deleted. Defaults to None.
+
+    Returns:
+        bool: True if the record was successfully deleted, False otherwise.
     """
     # Logic to delete expense from the database
-    # return {"message": f"Deleted expense with ID {record_id}"}
-    return "delete_record has been called with the following parameters: " + str(record_id)
+    print(f"delete_record has been called with the following parameters: {str(record_id)}")
+    return database.delete_data(record_id=record_id)
 
 
-def get_total_amount_by_type(record_type:str):
+def get_total_amount_by_type(record_type:str=None):
     """
-    Get the total amount of expenses by type in the database.
+    Get the total amount of expenses by a specific type from the database.
+
+    This function retrieves the total amount of expenses filtered by the specified 
+    record type. If no record type is provided, it calculates the total amount 
+    for all types.
+
+    Args:
+        record_type (str, optional): The type of record to filter expenses by. 
+            Defaults to None, which means no filtering is applied.
+
+    Returns:
+        float: The total amount of expenses for the specified type or all types 
+            if no type is specified.
     """
     # Logic to get total amount by type from the database
-    # return {"total_amount": 500}
-    return "get_total_amount_by_type has been called with the following parameters: " + str(record_type)
+    print(f"get_total_amount_by_type has been called with the following parameters: {str(record_type)}")
+    return database.calculate_total_amount(record_type=record_type)
 
 
-def get_monthly_total(record_type:str, month:int, year:int):
+def get_monthly_total(record_type:str=None, month:int=None, year:int=None):
     """
-    Get the total amount of expenses for a specific month in the database.
+    Args:
+        record_type (str, optional): The type of record to filter by (e.g., "expense", "income"). Defaults to None.
+        month (int, optional): The month for which the total is calculated (1 for January, 12 for December). Defaults to None.
+        year (int, optional): The year for which the total is calculated. Defaults to None.
+
+    Returns:
+        float: The total amount of expenses for the specified month and year.
     """
     # Logic to get monthly total from the database
-    # return {"monthly_total": 100}
-    return "get_monthly_total has been called with the following parameters: " + str(record_type) + ", " + str(month) + ", " + str(year)
+    print(f"get_monthly_total has been called with the following parameters: {str(record_type)}, {str(month)}, {str(year)}")
+    return database.calculate_monthly_total(record_type=record_type, month=month, year=year)
 
 
 def get_source_list(record_type:str, month:int, year:int):
     """
-    Get the list of sources from the database.
+    Retrieves a list of sources from the database based on the specified record type, month, and year.
+
+    Args:
+        record_type (str): The type of record to filter the sources (e.g., 'financial', 'academic').
+        month (int): The month for which to retrieve the sources (1-12).
+        year (int): The year for which to retrieve the sources.
+
+    Returns:
+        list: A list of sources retrieved from the database matching the specified criteria.
+
+    Raises:
+        ValueError: If the provided arguments are invalid or out of range.
+        DatabaseError: If there is an issue connecting to or querying the database.
     """
     # Logic to get source list from the database
-    # return {"sources": ["source1", "source2"]}
-    return "get_source_list has been called with the following parameters: " + str(record_type) + ", " + str(month) + ", " + str(year)
+    print(f"get_source_list has been called with the following parameters: {str(record_type)}, {str(month)}, {str(year)}")
+    return database.list_sources(record_type=record_type, month=month, year=year)
 
 
 def get_average_amount(record_type:str, month:int, year:int):
     """
-    Get the average amount of expenses for a specific month in the database.
+    Calculate the average amount of expenses for a specific record type, month, and year.
+
+    Args:
+        record_type (str): The type of record to filter by (e.g., "expense", "income").
+        month (int): The month for which to calculate the average (1 for January, 12 for December).
+        year (int): The year for which to calculate the average.
+
+    Returns:
+        float: The average amount of the specified record type for the given month and year.
+
+    Raises:
+        ValueError: If the provided month is not in the range 1-12.
+        DatabaseError: If there is an issue querying the database.
     """
     # Logic to get average amount from the database
-    # return {"average_amount": 50}
-    return "get_average_amount has been called with the following parameters: " + str(record_type) + ", " + str(month) + ", " + str(year)
+    print(f"get_average_amount has been called with the following parameters: {str(record_type)}, {str(month)}, {str(year)}")
+    return database.calculate_average_amount(record_type=record_type, month=month, year=year)
 
 
-def get_transaction_history(record_type:str, month:int, year:int):
+def get_transaction_history(record_type:str=None, month:int=None, year:int=None, file_format:str="json"):
     """
-    Get the transaction history for a specific month in the database.
+    Retrieves the transaction history from the database based on the specified parameters.
+
+    Args:
+        record_type (str, optional): The type of transaction records to retrieve (e.g., "income", "expense").
+        month (int, optional): The month for which to retrieve transaction history (1-12).
+        year (int, optional): The year for which to retrieve transaction history.
+        file_format (str, optional): The format in which to export the data (default is "json").
+
+    Returns:
+        Any: The exported transaction data in the specified file format.
+
+    Raises:
+        ValueError: If invalid parameters are provided.
+        DatabaseError: If there is an issue accessing the database.
     """
     # Logic to get transaction history from the database
-    # return {"transaction_history": [{"id": 1, "amount": 100, "date": "2023-01-01"}]}
-    return "get_transaction_history has been called with the following parameters: " + str(record_type) + ", " + str(month) + ", " + str(year)
-### NEED TO ADD THE FUNCTION CALLS TO THE DATABASE ###
+    print(f"get_transaction_history has been called with the following parameters: {str(record_type)}{str(month)}, {str(year)}, {str(file_format)}")
+    return database.export_data(file_format=file_format, record_type=record_type, month=month, year=year)
 
 
 
@@ -296,7 +384,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
             ]
         ),
     )
-    print(response.function_calls[0])
+    print(f"response.function_call[0]: {response.function_calls[0]}")
 
 
 
@@ -390,5 +478,6 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
         print(f"Function content: {function_args}")
         result = function_mapping[function_name](**function_args)
         print(result)
+        return {"status": "success", "result": result}
     else:
         raise HTTPException(status_code=400, detail="Invalid function call")
