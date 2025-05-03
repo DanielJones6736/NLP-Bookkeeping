@@ -39,4 +39,9 @@ id,type,amount,source,date
 38,expense,-40.0,Public Transport,2025-02-06
 39,expense,-60.0,Streaming Services,2025-02-07
 40,expense,-85.0,Gift Shopping,2025-02-08
-41,expense,-100.50,Groceries,2023-10-01
+41,expense,-100.5,Groceries,2023-10-01
+42,expense,-100.5,Groceries,2023-10-01
+43,expense,-100.5,Groceries,2023-10-01
+44,expense,-100.5,Groceries,2023-10-01
+45,expense,-100.5,Groceries,2023-10-01
+46,expense,-100.50,Groceries,2023-10-01

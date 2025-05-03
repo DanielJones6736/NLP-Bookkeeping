@@ -259,6 +259,36 @@ class Database_Tools:
         return filtered_data['amount'].astype(float).mean()
 
 
+    def export_data(self, file_format="json", month=None, year=None):
+        """
+        Exports the DataFrame as a JSON or CSV string, with optional filtering by month and year.
+
+        Args:
+            file_format (str): The format to export the data ('json' or 'csv').
+            month (int, optional): The month for which to filter the data (1-12).
+            year (int, optional): The year for which to filter the data.
+
+        Returns:
+            str: The exported data as a string.
+
+        Raises:
+            ValueError: If the file_format is not 'json' or 'csv'.
+        """
+        filtered_data = self.data
+
+        if month is not None:
+            filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.month == month]
+        if year is not None:
+            filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.year == year]
+
+        if file_format.lower() == "json":
+            return filtered_data.to_json(orient="records", date_format="iso")
+        elif file_format.lower() == "csv":
+            return filtered_data.to_csv(index=False)
+        else:
+            raise ValueError("Invalid file format. Please choose 'json' or 'csv'.")
+
+
 
 if __name__ == "__main__":
     database = Database_Tools()
@@ -272,3 +302,6 @@ if __name__ == "__main__":
     print("\n")
     print(database.list_sources(month=2, year=2025, record_type="pay"))
     print(f"Average Amount for October 2023: ${database.calculate_average_amount(month=2, year=2025)}")
+
+    print("\n")
+    print(database.export_data("csv", month=2))

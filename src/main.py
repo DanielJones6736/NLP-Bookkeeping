@@ -22,8 +22,11 @@ gemini_instructions = \
 "get_monthly_total(record_type:str, month:int, year:int), " \
 "get_source_list(record_type:str, month:int, year:int), " \
 "get_average_amount(record_type:str, month:int, year:int). " \
+"get_transaction_history(record_type:str, month:int, year:int). " \
 "Make sure to only use the parameters that are needed for the function. " \
 "For delete_record, if the latest record is to be deleted, then record_id should be None or the ID of the record. " \
+"If no user input is provided, use the parameter value None " \
+"User prompt: "
 
 
 
@@ -107,6 +110,15 @@ def get_average_amount(record_type:str, month:int, year:int):
     # Logic to get average amount from the database
     # return {"average_amount": 50}
     return "get_average_amount has been called with the following parameters: " + str(record_type) + ", " + str(month) + ", " + str(year)
+
+
+def get_transaction_history(record_type:str, month:int, year:int):
+    """
+    Get the transaction history for a specific month in the database.
+    """
+    # Logic to get transaction history from the database
+    # return {"transaction_history": [{"id": 1, "amount": 100, "date": "2023-01-01"}]}
+    return "get_transaction_history has been called with the following parameters: " + str(record_type) + ", " + str(month) + ", " + str(year)
 ### NEED TO ADD THE FUNCTION CALLS TO THE DATABASE ###
 
 
@@ -247,6 +259,19 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
             required=["record_type", "month", "year"],
         ),
     )
+    function_get_transaction_history = types.FunctionDeclaration(
+        name="get_transaction_history",
+        description="Get the transaction history for a specific month in the database.",
+        parameters=types.Schema(
+            type="OBJECT",
+            properties={
+                "record_type": types.Schema(type="STRING", description="The type of the record ('expense' or 'pay')."),
+                "month": types.Schema(type="NUMBER", description="The month for which to get the transaction history."),
+                "year": types.Schema(type="NUMBER", description="The year for which to get the transaction history."),
+            },
+            required=["record_type", "month", "year"],
+        ),
+    )
     tool = types.Tool(function_declarations=[
         function_add_expense, 
         function_add_pay,
@@ -257,6 +282,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
         function_get_monthly_total,
         function_get_source_list,
         function_get_average_amount,
+        function_get_transaction_history
     ])
 
 
@@ -275,61 +301,94 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
 
 
     # Call the function based on the response
-    if response.candidates[0].content.parts[0].function_call.name == "add_expense":
-        function_call = response.candidates[0].content.parts[0].function_call
-        print(f"Function call: {function_call.name}")
-        print(f"Function content: {function_call.args}")
-        result = add_expense(**function_call.args)
+    # if response.candidates[0].content.parts[0].function_call.name == "add_expense":
+    #     function_call = response.candidates[0].content.parts[0].function_call
+    #     print(f"Function call: {function_call.name}")
+    #     print(f"Function content: {function_call.args}")
+    #     result = add_expense(**function_call.args)
+    #     print(result)
+    # elif response.candidates[0].content.parts[0].function_call.name == "add_pay":
+    #     function_call = response.candidates[0].content.parts[0].function_call
+    #     print(f"Function call: {function_call.name}")
+    #     print(f"Function content: {function_call.args}")
+    #     result = add_pay(**function_call.args)
+    #     print(result)
+    # elif response.candidates[0].content.parts[0].function_call.name == "update_expense":
+    #     function_call = response.candidates[0].content.parts[0].function_call
+    #     print(f"Function call: {function_call.name}")
+    #     print(f"Function content: {function_call.args}")
+    #     result = update_expense(**function_call.args)
+    #     print(result)
+    # elif response.candidates[0].content.parts[0].function_call.name == "update_pay":
+    #     function_call = response.candidates[0].content.parts[0].function_call
+    #     print(f"Function call: {function_call.name}")
+    #     print(f"Function content: {function_call.args}")
+    #     result = update_pay(**function_call.args)
+    #     print(result)
+    # elif response.candidates[0].content.parts[0].function_call.name == "delete_record":
+    #     function_call = response.candidates[0].content.parts[0].function_call
+    #     print(f"Function call: {function_call.name}")
+    #     print(f"Function content: {function_call.args}")
+    #     result = delete_record(**function_call.args)
+    #     print(result)
+    # elif response.candidates[0].content.parts[0].function_call.name == "get_total_amount_by_type":
+    #     function_call = response.candidates[0].content.parts[0].function_call
+    #     print(f"Function call: {function_call.name}")
+    #     print(f"Function content: {function_call.args}")
+    #     result = get_total_amount_by_type(**function_call.args)
+    #     print(result)
+    # elif response.candidates[0].content.parts[0].function_call.name == "get_monthly_total":
+    #     function_call = response.candidates[0].content.parts[0].function_call
+    #     print(f"Function call: {function_call.name}")
+    #     print(f"Function content: {function_call.args}")
+    #     result = get_monthly_total(**function_call.args)
+    #     print(result)
+    # elif response.candidates[0].content.parts[0].function_call.name == "get_source_list":
+    #     function_call = response.candidates[0].content.parts[0].function_call
+    #     print(f"Function call: {function_call.name}")
+    #     print(f"Function content: {function_call.args}")
+    #     result = get_source_list(**function_call.args)
+    #     print(result)
+    # elif response.candidates[0].content.parts[0].function_call.name == "get_average_amount":
+    #     function_call = response.candidates[0].content.parts[0].function_call
+    #     print(f"Function call: {function_call.name}")
+    #     print(f"Function content: {function_call.args}")
+    #     result = get_average_amount(**function_call.args)
+    # elif response.candidates[0].content.parts[0].function_call.name == "get_transaction_history":
+    #     function_call = response.candidates[0].content.parts[0].function_call
+    #     print(f"Function call: {function_call.name}")
+    #     print(f"Function content: {function_call.args}")
+    #     result = get_transaction_history(**function_call.args)
+    #     print(result)
+    # else:
+    #     raise HTTPException(status_code=400, detail="Invalid function call")
+
+
+
+    # Refactor the function call handling using a dictionary-based switch
+    # Define a mapping of function names to their corresponding handlers
+    function_mapping = {
+        "add_expense": add_expense,
+        "add_pay": add_pay,
+        "update_expense": update_expense,
+        "update_pay": update_pay,
+        "delete_record": delete_record,
+        "get_total_amount_by_type": get_total_amount_by_type,
+        "get_monthly_total": get_monthly_total,
+        "get_source_list": get_source_list,
+        "get_average_amount": get_average_amount,
+        "get_transaction_history": get_transaction_history,
+    }
+    
+    # Call the function based on the response
+    function_call = response.candidates[0].content.parts[0].function_call
+    function_name = function_call.name
+    function_args = function_call.args
+    
+    if function_name in function_mapping:
+        print(f"Function call: {function_name}")
+        print(f"Function content: {function_args}")
+        result = function_mapping[function_name](**function_args)
         print(result)
-    elif response.candidates[0].content.parts[0].function_call.name == "add_pay":
-        function_call = response.candidates[0].content.parts[0].function_call
-        print(f"Function call: {function_call.name}")
-        print(f"Function content: {function_call.args}")
-        result = add_pay(**function_call.args)
-        print(result)
-    elif response.candidates[0].content.parts[0].function_call.name == "update_expense":
-        function_call = response.candidates[0].content.parts[0].function_call
-        print(f"Function call: {function_call.name}")
-        print(f"Function content: {function_call.args}")
-        result = update_expense(**function_call.args)
-        print(result)
-    elif response.candidates[0].content.parts[0].function_call.name == "update_pay":
-        function_call = response.candidates[0].content.parts[0].function_call
-        print(f"Function call: {function_call.name}")
-        print(f"Function content: {function_call.args}")
-        result = update_pay(**function_call.args)
-        print(result)
-    elif response.candidates[0].content.parts[0].function_call.name == "delete_record":
-        function_call = response.candidates[0].content.parts[0].function_call
-        print(f"Function call: {function_call.name}")
-        print(f"Function content: {function_call.args}")
-        result = delete_record(**function_call.args)
-        print(result)
-    elif response.candidates[0].content.parts[0].function_call.name == "get_total_amount_by_type":
-        function_call = response.candidates[0].content.parts[0].function_call
-        print(f"Function call: {function_call.name}")
-        print(f"Function content: {function_call.args}")
-        result = get_total_amount_by_type(**function_call.args)
-        print(result)
-    elif response.candidates[0].content.parts[0].function_call.name == "get_monthly_total":
-        function_call = response.candidates[0].content.parts[0].function_call
-        print(f"Function call: {function_call.name}")
-        print(f"Function content: {function_call.args}")
-        result = get_monthly_total(**function_call.args)
-        print(result)
-    elif response.candidates[0].content.parts[0].function_call.name == "get_source_list":
-        function_call = response.candidates[0].content.parts[0].function_call
-        print(f"Function call: {function_call.name}")
-        print(f"Function content: {function_call.args}")
-        result = get_source_list(**function_call.args)
-        print(result)
-    elif response.candidates[0].content.parts[0].function_call.name == "get_average_amount":
-        function_call = response.candidates[0].content.parts[0].function_call
-        print(f"Function call: {function_call.name}")
-        print(f"Function content: {function_call.args}")
-        result = get_average_amount(**function_call.args)
     else:
         raise HTTPException(status_code=400, detail="Invalid function call")
-
-
-
