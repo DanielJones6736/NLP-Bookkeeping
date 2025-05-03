@@ -127,15 +127,18 @@ class Database_Tools:
 
         if record_type is not None:
             self.data.loc[self.data['id'] == record_id, 'type'] = record_type
+
         if amount is not None:
-            if record_type.lower() == 'expense':
-                amount = -abs(float(amount))
             try:
+                if record_type.lower() == 'expense':
+                    amount = -abs(float(amount))
                 self.data.loc[self.data['id'] == record_id, 'amount'] = f"{float(amount):.2f}"
             except ValueError:
                 raise ValueError("The amount must be a valid number.")
+            
         if source is not None:
             self.data.loc[self.data['id'] == record_id, 'source'] = source
+            
         if date is not None:
             self.data.loc[self.data['id'] == record_id, 'date'] = date
 

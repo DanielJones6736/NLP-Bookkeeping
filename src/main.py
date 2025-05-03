@@ -62,7 +62,7 @@ def add_pay(amount: float, source: str, date: str):
     return database.insert_data("pay", amount=amount, source=source, date=date)
 
 
-def update_expense(record_id:int, amount:float=None, location:str=None, date:str=None):
+def update_expense(record_id:int, amount:float=None, source:str=None, date:str=None):
     """
     Parameters:
         record_id (int): The unique identifier of the expense record to update.
@@ -74,8 +74,8 @@ def update_expense(record_id:int, amount:float=None, location:str=None, date:str
         bool: True if the update was successful, False otherwise.
     """
     # Logic to update expense in the database
-    print(f"update_expense has been called with the following parameters: {str(record_id)}, {str(amount)}, {str(location)}, {str(date)}")
-    return database.update_data("expense", record_id=record_id, amount=amount, location=location, date=date)
+    print(f"update_expense has been called with the following parameters: {str(record_id)}, {str(amount)}, {str(source)}, {str(date)}")
+    return database.update_data(record_type="expense", record_id=record_id, amount=amount, source=source, date=date)
 
 
 def update_pay(record_id:int, amount:float=None, source:str=None, date:str=None):
@@ -93,7 +93,7 @@ def update_pay(record_id:int, amount:float=None, source:str=None, date:str=None)
     """
     # Logic to update payment in the database
     print(f"update_pay has been called with the following parameters: {str(record_id)}, {str(amount)}, {str(source)}, {str(date)}")
-    return database.update_data("pay", record_id=record_id, amount=amount, source=source, date=date)
+    return database.update_data(record_type="pay", record_id=record_id, amount=amount, source=source, date=date)
 
 def delete_record(record_id:int = None):
     """
@@ -266,7 +266,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
             properties={
                 "record_id": types.Schema(type="NUMBER", description="The ID of the record to update."),
                 "amount": types.Schema(type="NUMBER", description="The new amount of the expense."),
-                "location": types.Schema(type="STRING", description="The new location of the expense."),
+                "source": types.Schema(type="STRING", description="The new source of the expense."),
                 "date": types.Schema(type="STRING", description="The new date of the expense."),
             },
             required=["record_id"],
@@ -305,7 +305,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
             properties={
                 "record_type": types.Schema(type="STRING", description="The type of the record ('expense' or 'pay')."),
             },
-            required=["record_type"],
+            required=[],
         ),
     )
     function_get_monthly_total = types.FunctionDeclaration(
@@ -318,7 +318,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
                 "month": types.Schema(type="NUMBER", description="The month for which to get the total."),
                 "year": types.Schema(type="NUMBER", description="The year for which to get the total."),
             },
-            required=["record_type", "month", "year"],
+            required=[],
         ),
     )
     function_get_source_list = types.FunctionDeclaration(
@@ -331,7 +331,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
                 "month": types.Schema(type="NUMBER", description="The month for which to get the sources."),
                 "year": types.Schema(type="NUMBER", description="The year for which to get the sources."),
             },
-            required=["record_type", "month", "year"],
+            required=[],
         ),
     )
     function_get_average_amount = types.FunctionDeclaration(
@@ -344,7 +344,7 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
                 "month": types.Schema(type="NUMBER", description="The month for which to get the average."),
                 "year": types.Schema(type="NUMBER", description="The year for which to get the average."),
             },
-            required=["record_type", "month", "year"],
+            required=[],
         ),
     )
     function_get_transaction_history = types.FunctionDeclaration(
@@ -353,11 +353,12 @@ async def genai_api(prompt:str, max_output_tokens:int=1024):
         parameters=types.Schema(
             type="OBJECT",
             properties={
+                "file_format": types.Schema(type="STRING", description="The format in which to export the data (default is 'json')."),
                 "record_type": types.Schema(type="STRING", description="The type of the record ('expense' or 'pay')."),
                 "month": types.Schema(type="NUMBER", description="The month for which to get the transaction history."),
                 "year": types.Schema(type="NUMBER", description="The year for which to get the transaction history."),
             },
-            required=["record_type", "month", "year"],
+            required=[],
         ),
     )
     tool = types.Tool(function_declarations=[
