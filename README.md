@@ -42,13 +42,72 @@ This project is a Natural Language Processing (NLP) application designed to inte
    ```bash
    pip install -r requirements.txt
    ```
-3. Run the FastAPI server:
-   ```bash
-   uvicorn main:app --reload
+3. Run the FastAPI server using the following configuration in `.vscode/launch.json` for debugging in the VSCode editor.
    ```
-4. Open the GUI and start interacting with the system.
+   {
+       "name": "Python Debugger: FastAPI",
+       "type": "debugpy",
+       "request": "launch",
+       "module": "uvicorn",
+       "args": [
+           "src.main:app",
+           "--reload"
+       ],
+       "jinja": true
+   }
+   ```
+4. Open the GUI using the `/docs` route and start interacting with the system. This route will open a SwaggerUI-like interface to conveniently interact with the API
 
+<br/>
 **Note**: The code and repository for the frontend GUI are hosted in a separate GitHub repository. You can find the website deployment [here](https://chat-wallet-next.operameiying.workers.dev).
+
+## API Documentation
+
+The FastAPI backend provides the following routes for interacting with the system:
+
+### Root Endpoint
+- **URL**: `/`
+- **Method**: `GET`
+- **Description**: Returns a simple welcome message to verify the server is running.
+- **Response**:
+  ```json
+  {
+    "message": "Hello World..."
+  }
+  ```
+
+### Health Check
+- **URL**: `/health`
+- **Method**: `GET`
+- **Description**: Checks the health status of the server.
+- **Response**:
+  ```json
+  {
+    "status": "ok"
+  }
+  ```
+
+### Generate AI Response
+- **URL**: `/genai/{prompt}`
+- **Method**: `GET`
+- **Description**: Processes a natural language prompt using the Google Gemini API and performs the appropriate database operation.
+- **Parameters**:
+  - `prompt` (string): The user input to be processed.
+  - `max_output_tokens` (integer, optional): The maximum number of tokens for the AI response. Default is 512.
+- **Response**:
+  - On success:
+    ```json
+    {
+      "status": "success",
+      "result": { ... }
+    }
+    ```
+  - On error:
+    ```json
+    {
+      "detail": "Invalid function call"
+    }
+    ```
 
 ## Future Work
 
@@ -58,4 +117,4 @@ This project is a Natural Language Processing (NLP) application designed to inte
 
 ## Acknowledgments
 
-This project was developed as part of the CS6320 - NLP course in Spring 2025.
+This project was developed as part of the CS6320 - NLP course in Spring 2025 at the University of Texas as Dallas
