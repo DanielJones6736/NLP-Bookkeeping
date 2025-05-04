@@ -109,6 +109,30 @@ The FastAPI backend provides the following routes for interacting with the syste
     }
     ```
 
+## Folder Structure
+
+The project is organized as follows:
+
+```
+NLP-Bookkeeping/
+│
+├── src/
+│   ├── main.py               # Entry point for the FastAPI backend
+│   ├── database_tools.py     # Module for handling CSV-based database operations
+│   └── config.py             # Configuration settings for Gemini API
+│
+├── data/
+│   └── database.csv     # CSV file simulating the database
+│
+├── .vscode/
+│   └── launch.json      # Debugging configuration for VSCode
+│
+├── requirements.txt     # List of required Python packages
+├── .gitignore           # List of files that aren't included in the repository
+├── LICENSE              # Contains licensing information
+└── README.md            # Project documentation
+```
+
 ## Future Work
 
 - Replace the CSV file with a real database for better scalability.
