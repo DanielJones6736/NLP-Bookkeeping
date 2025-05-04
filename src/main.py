@@ -64,8 +64,7 @@ def add_pay(amount: float, source: str, date: str):
     print(f"add_pay has been called with the following parameters: {str(amount)}, {str(source)}, {str(date)}")
     return database.insert_data("pay", amount=amount, source=source, date=date)
 
-### THIS IMPLEMENTATION MIGHT NEED TO BE CHANGED TO DELETE THEN INSERT ###
-### GEMINI DID NOT RECOGNIZE THE PROMPT FOR THIS FUNCTION ###
+
 def update_expense(record_id:int, amount:float=None, source:str=None, date:str=None):
     """
     Parameters:
@@ -82,8 +81,6 @@ def update_expense(record_id:int, amount:float=None, source:str=None, date:str=N
     return database.update_data(record_type="expense", record_id=record_id, amount=amount, source=source, date=date)
 
 
-### THIS IMPLEMENTATION MIGHT NEED TO BE CHANGED TO DELETE THEN INSERT ###
-### GEMINI DID NOT RECOGNIZE THE PROMPT FOR THIS FUNCTION ###
 def update_pay(record_id:int, amount:float=None, source:str=None, date:str=None):
     """
     Updates an existing payment record in the database.

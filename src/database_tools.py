@@ -145,6 +145,7 @@ class Database_Tools:
 
         self.current_total = self.calculate_total_amount()
         self.save_database()
+        return f"Record with ID {str(record_id)} updated successfully with Type: {str(record_type)}, Amount: {str(amount)}, Source: {str(source)}, Date: {str(date)}"
 
 
 

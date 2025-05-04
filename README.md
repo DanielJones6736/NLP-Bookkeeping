@@ -7,7 +7,7 @@ This project is a Natural Language Processing (NLP) application designed to inte
 ## Project Overview
 
 - **User Interface**: A graphical user interface (GUI) allows users to input prompts in natural language.
-- **Backend**: The backend is implemented using Python's FastAPI framework, which processes the user input and interacts with the database.
+- **Backend**: The backend is implemented using Python's FastAPI framework, which processes the user input, interacts with the database, and calls the Google Gemini API. 
 - **Database**: A simple CSV file is used to simulate a database. This choice was made to keep the project focused on NLP and avoid the complexity of implementing a full-fledged database.
 
 ## Key Features

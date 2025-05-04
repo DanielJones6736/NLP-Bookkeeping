@@ -42,7 +42,7 @@ id,type,amount,source,date
 41,expense,-100.5,Groceries,2023-10-01
 42,expense,-100.5,Groceries,2023-10-01
 43,expense,-100.5,Groceries,2023-10-01
-44,expense,-100.5,Groceries,2023-10-01
-45,expense,-100.5,Groceries,2023-10-01
-46,expense,-100.5,Groceries,2023-10-01
-47,expense,-50.0,Walmart,2025-05-03
+44,pay,1000.00,Work,2023-10-01
+45,expense,-100.5,Dinner,2023-10-01
+46,pay,-100.5,Nightclub,2023-10-01
+47,expense,-100.0,Walmart,2025-05-03
