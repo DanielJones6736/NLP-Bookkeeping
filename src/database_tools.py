@@ -326,12 +326,28 @@ class Database_Tools:
         if year is not None:
             filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.year == year]
 
+        # Create a copy to avoid modifying the original data
+        export_data = filtered_data.copy()
+        
+        # Ensure 'amount' is float type for consistent data type
+        export_data['amount'] = export_data['amount'].astype(float)
+        
         if file_format.lower() == "json":
-            return filtered_data.to_json(orient="records", date_format="iso")
+            return export_data.to_json(orient="records", date_format="iso")
         elif file_format.lower() == "csv":
-            return filtered_data.to_csv(index=False)
+            return export_data.to_csv(index=False)
         elif file_format.lower() == "list":
-            return filtered_data.values.tolist()
+            # Convert all data to appropriate Python types before returning as list
+            result = []
+            for _, row in export_data.iterrows():
+                row_list = []
+                for val in row:
+                    # Convert pandas/numpy types to Python native types
+                    if hasattr(val, 'item'):  # Check if it's a numpy scalar
+                        val = val.item()  # Convert numpy type to native Python type
+                    row_list.append(val)
+                result.append(row_list)
+            return result
         else:
             raise ValueError("Invalid file format. Please choose 'json' or 'csv'.")
 
@@ -339,14 +355,14 @@ class Database_Tools:
 
     def batch_insert_data(self, records):
         """
-        批量添加多条记录到数据库。
+        Batch add multiple records to the database.
 
         Args:
-            records (list): 包含多条记录数据的列表，每条记录应该是一个字典，包含以下键:
+            records (list): A list of dictionaries containing multiple record data. Each record should be a dictionary with the following keys:
                             'type', 'amount', 'note', 'category', 'date'
 
         Returns:
-            list: 成功添加的记录ID列表
+            list: A list of successfully added record IDs.
         """
         if not records or not isinstance(records, list):
             raise ValueError("Records must be a non-empty list")
@@ -360,13 +376,13 @@ class Database_Tools:
             try:
                 amount = float(record['amount'])
                 
-                # 如果是支出，转为负数
+                # if the record is an expense, convert to negative
                 if record['type'].lower() == 'expense':
                     amount = -abs(amount)
                     
                 new_id = int(self.data['id'].max() + 1) if not self.data.empty else 1
                 
-                # 转换日期为标准格式
+                # convert date to standard format
                 try:
                     date = pd.to_datetime(record['date']).strftime('%Y-%m-%d')
                 except Exception:
@@ -382,12 +398,12 @@ class Database_Tools:
                 }])
                 
                 self.data = pd.concat([self.data, new_record], ignore_index=True)
-                added_ids.append(int(new_id))  # 转换为普通Python int类型
+                added_ids.append(int(new_id))  # convert to normal Python int type
                 
             except ValueError as e:
                 raise ValueError(f"Error processing record: {e}")
         
-        # 保存数据并更新总额
+        # save data and update total
         self.current_total = self.calculate_total_amount()
         self.save_database()
         

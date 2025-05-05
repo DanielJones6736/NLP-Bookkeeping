@@ -1,21 +1,24 @@
 from src.config import gemini_api_key
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query, Path, Body, status
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
 from google.genai import types
 from src import database_tools
+from datetime import datetime
+from typing import List, Optional, Dict, Any, Union
+from pydantic import BaseModel, Field
 
 
 
 app = FastAPI()
 
-# 添加CORS中间件
+# add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 允许所有源，生产环境建议指定具体域名
+    allow_origins=["*"],  # allow all sources, recommend specifying specific domains in production
     allow_credentials=True,
-    allow_methods=["*"],  # 允许所有HTTP方法
-    allow_headers=["*"],  # 允许所有请求头
+    allow_methods=["*"],  # allow all HTTP methods
+    allow_headers=["*"],  # allow all request headers
 )
 
 database = database_tools.Database_Tools()
@@ -590,6 +593,272 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
         else:
             raise HTTPException(status_code=400, detail="Invalid function call")
     else:
-        # 如果没有function calls，则返回普通文本响应
+        # if there is no function calls, return the text response
         text_response = response.candidates[0].content.parts[0].text
         return {"status": "success", "result": text_response}
+
+# Define Pydantic models for API requests and responses
+class TransactionBase(BaseModel):
+    """Base model for transaction data"""
+    date: str = Field(..., description="Transaction date in MM.DD.YYYY format")
+    day: str = Field(..., description="Abbreviated day of week")
+    category: str = Field(..., description="Transaction category")
+    note: str = Field(..., description="Description of the transaction")
+    amount: float = Field(..., description="Transaction amount (positive for income, negative for expense)")
+
+class TransactionCreate(TransactionBase):
+    """Model for creating a new transaction"""
+    pass
+
+class TransactionUpdate(BaseModel):
+    """Model for updating an existing transaction"""
+    date: Optional[str] = Field(None, description="Transaction date in MM.DD.YYYY format")
+    day: Optional[str] = Field(None, description="Abbreviated day of week")
+    category: Optional[str] = Field(None, description="Transaction category")
+    note: Optional[str] = Field(None, description="Description of the transaction")
+    amount: Optional[float] = Field(None, description="Transaction amount (positive for income, negative for expense)")
+
+class Transaction(TransactionBase):
+    """Model for transaction response with ID"""
+    id: int = Field(..., description="Unique transaction identifier")
+
+class ResponseModel(BaseModel):
+    """Standard API response model"""
+    success: bool = Field(..., description="Operation success status")
+    data: Optional[Union[List[Dict[str, Any]], Dict[str, Any]]] = Field(None, description="Response data")
+    message: Optional[str] = Field(None, description="Response message")
+    timestamp: Optional[str] = Field(None, description="Response timestamp in ISO format")
+
+# API endpoints for direct database operations
+@app.get("/transactions", response_model=ResponseModel, status_code=status.HTTP_200_OK)
+async def get_transactions(
+    year: Optional[int] = Query(None, description="Filter by year"),
+    month: Optional[int] = Query(None, description="Filter by month (1-12)"),
+    limit: Optional[int] = Query(None, description="Maximum number of transactions to return"),
+    offset: Optional[int] = Query(None, description="Number of transactions to skip")
+):
+    """
+    Retrieve all transactions with optional filtering.
+    
+    Args:
+        year: Optional filter by year
+        month: Optional filter by month (1-12)
+        limit: Maximum number of transactions to return
+        offset: Number of transactions to skip (for pagination)
+        
+    Returns:
+        List of transactions matching the filter criteria
+    """
+    try:
+        # Get data from database
+        data = database.export_data(file_format="json", year=year, month=month)
+        
+        # Convert to Python objects
+        import json
+        transactions = json.loads(data)
+        
+        # Apply pagination if requested
+        if offset is not None:
+            transactions = transactions[offset:]
+        if limit is not None:
+            transactions = transactions[:limit]
+            
+        # Format the response
+        for transaction in transactions:
+            # Convert date from YYYY-MM-DD to MM.DD.YYYY
+            date_obj = datetime.strptime(transaction['date'], '%Y-%m-%d')
+            transaction['date'] = date_obj.strftime('%m.%d.%Y')
+            
+            # Add day of week
+            transaction['day'] = date_obj.strftime('%a')
+            
+            # Ensure amount is a float (already handled in database export but double-check)
+            transaction['amount'] = float(transaction['amount'])
+            
+            # Ensure ID is an integer
+            transaction['id'] = int(transaction['id'])
+            
+            # Rename fields to match the expected format
+            if 'note' not in transaction and 'source' in transaction:
+                transaction['note'] = transaction.pop('source')
+                
+        return {
+            "success": True,
+            "data": transactions,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve transactions: {str(e)}"
+        )
+
+@app.post("/transactions", response_model=ResponseModel, status_code=status.HTTP_201_CREATED)
+async def add_transaction(transaction: TransactionCreate):
+    """
+    Create a new transaction.
+    
+    Args:
+        transaction: Transaction data to create
+        
+    Returns:
+        Newly created transaction with ID
+    """
+    try:
+        # Determine record type based on amount
+        record_type = "pay" if transaction.amount > 0 else "expense"
+        
+        # Convert date from MM.DD.YYYY to YYYY-MM-DD
+        date_obj = datetime.strptime(transaction.date, '%m.%d.%Y')
+        date_str = date_obj.strftime('%Y-%m-%d')
+        
+        # Insert data into database
+        result = database.insert_data(
+            record_type=record_type,
+            amount=abs(transaction.amount),  # Database will handle the sign
+            note=transaction.note,
+            category=transaction.category,
+            date=date_str
+        )
+        
+        # Extract the ID from the result message
+        import re
+        id_match = re.search(r"ID: (\d+)", result)
+        if id_match:
+            transaction_id = int(id_match.group(1))
+        else:
+            transaction_id = database.data['id'].max()
+        
+        # Create response with the new transaction including ID
+        new_transaction = {
+            "id": transaction_id,
+            "date": transaction.date,
+            "day": transaction.day,
+            "category": transaction.category,
+            "note": transaction.note,
+            "amount": transaction.amount
+        }
+        
+        return {
+            "success": True,
+            "data": new_transaction,
+            "message": "Transaction created successfully"
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to create transaction: {str(e)}"
+        )
+
+@app.put("/transactions/{id}", response_model=ResponseModel, status_code=status.HTTP_200_OK)
+async def update_transaction(
+    id: int = Path(..., description="Transaction ID"),
+    transaction: TransactionUpdate = Body(...)
+):
+    """
+    Update an existing transaction.
+    
+    Args:
+        id: Transaction ID to update
+        transaction: Updated transaction data
+        
+    Returns:
+        Updated transaction
+    """
+    try:
+        # Get the existing transaction to determine if it's pay or expense
+        if id not in database.data['id'].values:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Transaction with ID {id} not found"
+            )
+        
+        existing_record = database.data[database.data['id'] == id].iloc[0]
+        record_type = existing_record['type']
+        
+        # Process date if provided
+        date_str = None
+        if transaction.date:
+            date_obj = datetime.strptime(transaction.date, '%m.%d.%Y')
+            date_str = date_obj.strftime('%Y-%m-%d')
+        
+        # Process amount if provided
+        amount = None
+        if transaction.amount is not None:
+            amount = abs(transaction.amount)
+            # If amount sign changed, update record type
+            if (transaction.amount > 0 and record_type == 'expense') or \
+               (transaction.amount < 0 and record_type == 'pay'):
+                record_type = "pay" if transaction.amount > 0 else "expense"
+        
+        # Update the record
+        database.update_data(
+            record_id=id,
+            record_type=record_type,
+            amount=amount,
+            note=transaction.note,
+            category=transaction.category,
+            date=date_str
+        )
+        
+        # Get the updated record
+        updated_record = database.data[database.data['id'] == id].iloc[0]
+        
+        # Format the response
+        date_obj = datetime.strptime(updated_record['date'], '%Y-%m-%d')
+        
+        updated_transaction = {
+            "id": int(updated_record['id']),
+            "date": date_obj.strftime('%m.%d.%Y'),
+            "day": transaction.day if transaction.day else date_obj.strftime('%a'),
+            "category": updated_record['category'],
+            "note": updated_record['note'],
+            "amount": float(updated_record['amount'])
+        }
+        
+        return {
+            "success": True,
+            "data": updated_transaction,
+            "message": "Transaction updated successfully"
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update transaction: {str(e)}"
+        )
+
+@app.delete("/transactions/{id}", response_model=ResponseModel, status_code=status.HTTP_200_OK)
+async def delete_transaction(id: int = Path(..., description="Transaction ID")):
+    """
+    Delete an existing transaction.
+    
+    Args:
+        id: Transaction ID to delete
+        
+    Returns:
+        Success message
+    """
+    try:
+        # Check if transaction exists
+        if id not in database.data['id'].values:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Transaction with ID {id} not found"
+            )
+        
+        # Delete the transaction
+        database.delete_data(record_id=id)
+        
+        return {
+            "success": True,
+            "message": f"Transaction with ID {id} deleted successfully"
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete transaction: {str(e)}"
+        )

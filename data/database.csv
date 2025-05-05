@@ -45,5 +45,3 @@ id,type,amount,note,category,date
 45,expense,-100.5,Restaurant Dinner,Food,2023-10-01
 46,expense,-100.5,Cover Charge,Health,2023-10-01
 47,expense,-999.0,Household Items,Shopping,2025-5-1
-48,expense,-111.0,test,Food,2025-05-03
-49,expense,-111.0,test,Food,2025-05-04
