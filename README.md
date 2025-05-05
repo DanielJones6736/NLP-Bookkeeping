@@ -1,13 +1,14 @@
 # NLP Bookkeeping Project
-CS 6320 - Natural Language Processing   Spring 2025  
-Members: Luoqi Zhao, Daniel Jones, and Ryan Vera 
 
-This project is a Natural Language Processing (NLP) application designed to interact with a simple database using natural language prompts. The project leverages the Gemini framework to process user inputs and execute database operations. 
+CS 6320 - Natural Language Processing Spring 2025  
+Members: Luoqi Zhao, Daniel Jones, and Ryan Vera
+
+This project is a Natural Language Processing (NLP) application designed to interact with a simple database using natural language prompts. The project leverages the Gemini framework to process user inputs and execute database operations.
 
 ## Project Overview
 
 - **User Interface**: A graphical user interface (GUI) allows users to input prompts in natural language.
-- **Backend**: The backend is implemented using Python's FastAPI framework, which processes the user input, interacts with the database, and calls the Google Gemini API. 
+- **Backend**: The backend is implemented using Python's FastAPI framework, which processes the user input, interacts with the database, and calls the Google Gemini API.
 - **Database**: A simple CSV file is used to simulate a database. This choice was made to keep the project focused on NLP and avoid the complexity of implementing a full-fledged database.
 
 ## Key Features
@@ -66,28 +67,31 @@ This project is a Natural Language Processing (NLP) application designed to inte
 The FastAPI backend provides the following routes for interacting with the system:
 
 ### Root Endpoint
+
 - **URL**: `/`
 - **Method**: `GET`
 - **Description**: Returns a simple welcome message to verify the server is running.
 - **Response**:
   ```json
   {
-    "message": "Hello World..."
+  	"message": "Hello World..."
   }
   ```
 
 ### Health Check
+
 - **URL**: `/health`
 - **Method**: `GET`
 - **Description**: Checks the health status of the server.
 - **Response**:
   ```json
   {
-    "status": "ok"
+  	"status": "ok"
   }
   ```
 
 ### Generate AI Response
+
 - **URL**: `/genai/{prompt}`
 - **Method**: `GET`
 - **Description**: Processes a natural language prompt using the Google Gemini API and performs the appropriate database operation.
@@ -105,9 +109,97 @@ The FastAPI backend provides the following routes for interacting with the syste
   - On error:
     ```json
     {
-      "detail": "Invalid function call"
+    	"detail": "Invalid function call"
     }
     ```
+
+### Get Transactions
+
+- **URL**: `/transactions`
+- **Method**: `GET`
+- **Description**: Retrieves a list of transactions with optional filtering.
+- **Parameters**:
+  - `year` (integer, optional): Filter by year.
+  - `month` (integer, optional): Filter by month (1-12).
+  - `limit` (integer, optional): Maximum number of transactions to return.
+  - `offset` (integer, optional): Number of transactions to skip.
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": [...],
+    "message": "Transactions retrieved successfully",
+    "timestamp": "2025-01-01T00:00:00"
+  }
+  ```
+
+### Add Transaction
+
+- **URL**: `/transactions`
+- **Method**: `POST`
+- **Description**: Adds a new transaction to the database.
+- **Request Body**:
+  ```json
+  {
+  	"date": "MM.DD.YYYY",
+  	"day": "Mon",
+  	"category": "Category",
+  	"note": "Description",
+  	"amount": 100.0
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {...},
+    "message": "Transaction added successfully",
+    "timestamp": "2025-01-01T00:00:00"
+  }
+  ```
+
+### Update Transaction
+
+- **URL**: `/transactions/{id}`
+- **Method**: `PUT`
+- **Description**: Updates an existing transaction by ID.
+- **Parameters**:
+  - `id` (integer): Transaction ID.
+- **Request Body**:
+  ```json
+  {
+  	"date": "MM.DD.YYYY",
+  	"day": "Mon",
+  	"category": "Category",
+  	"note": "Description",
+  	"amount": 100.0
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {...},
+    "message": "Transaction updated successfully",
+    "timestamp": "2025-01-01T00:00:00"
+  }
+  ```
+
+### Delete Transaction
+
+- **URL**: `/transactions/{id}`
+- **Method**: `DELETE`
+- **Description**: Deletes a transaction by ID.
+- **Parameters**:
+  - `id` (integer): Transaction ID.
+- **Response**:
+  ```json
+  {
+  	"success": true,
+  	"message": "Transaction deleted successfully",
+  	"timestamp": "2025-01-01T00:00:00"
+  }
+  ```
 
 ## Folder Structure
 
