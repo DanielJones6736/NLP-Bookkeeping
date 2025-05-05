@@ -447,34 +447,41 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
             ]
         ),
     )
-    print(f"response.function_call[0]: {response.function_calls[0]}")
+    
+    # check if response.function_calls exists
+    if response.function_calls and len(response.function_calls) > 0:
+        print(f"response.function_call[0]: {response.function_calls[0]}")
 
-    # Refactor the function call handling using a dictionary-based switch
-    # Define a mapping of function names to their corresponding handlers
-    function_mapping = {
-        "add_expense": add_expense,
-        "add_pay": add_pay,
-        "update_expense": update_expense,
-        "update_pay": update_pay,
-        "delete_record": delete_record,
-        "get_total_amount_by_type": get_total_amount_by_type,
-        "get_monthly_total": get_monthly_total,
-        "get_source_list": get_source_list,
-        "get_average_amount": get_average_amount,
-        "get_transaction_history": get_transaction_history,
-        "ai_analyze": ai_analyze,
-    }
-    
-    # Call the function based on the response
-    function_call = response.candidates[0].content.parts[0].function_call
-    function_name = function_call.name
-    function_args = function_call.args
-    
-    if function_name in function_mapping:
-        print(f"Function call: {function_name}")
-        print(f"Function content: {function_args}")
-        result = function_mapping[function_name](**function_args)
-        print(result)
-        return {"status": "success", "result": result}
+        # Refactor the function call handling using a dictionary-based switch
+        # Define a mapping of function names to their corresponding handlers
+        function_mapping = {
+            "add_expense": add_expense,
+            "add_pay": add_pay,
+            "update_expense": update_expense,
+            "update_pay": update_pay,
+            "delete_record": delete_record,
+            "get_total_amount_by_type": get_total_amount_by_type,
+            "get_monthly_total": get_monthly_total,
+            "get_source_list": get_source_list,
+            "get_average_amount": get_average_amount,
+            "get_transaction_history": get_transaction_history,
+            "ai_analyze": ai_analyze,
+        }
+        
+        # Call the function based on the response
+        function_call = response.candidates[0].content.parts[0].function_call
+        function_name = function_call.name
+        function_args = function_call.args
+        
+        if function_name in function_mapping:
+            print(f"Function call: {function_name}")
+            print(f"Function content: {function_args}")
+            result = function_mapping[function_name](**function_args)
+            print(result)
+            return {"status": "success", "result": result}
+        else:
+            raise HTTPException(status_code=400, detail="Invalid function call")
     else:
-        raise HTTPException(status_code=400, detail="Invalid function call")
+        # 如果没有function calls，则返回普通文本响应
+        text_response = response.candidates[0].content.parts[0].text
+        return {"status": "success", "result": text_response}
