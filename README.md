@@ -60,7 +60,7 @@ This project is a Natural Language Processing (NLP) application designed to inte
 4. Open the GUI using the `/docs` route and start interacting with the system. This route will open a SwaggerUI-like interface to conveniently interact with the API
 
 <br/>
-**Note**: The code and repository for the frontend GUI are hosted in a separate GitHub repository. You can find the website deployment (https://chat-wallet-next.operameiying.workers.dev).
+**Note**: The code and repository for the frontend GUI are hosted in a separate GitHub repository. You can find the website deployment [here](https://chat-wallet-next.operameiying.workers.dev). The link to the GitHub repository can be found [here](https://github.com/PigBehindTheCar/chat-wallet-next).
 
 ## API Documentation
 

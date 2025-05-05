@@ -247,6 +247,7 @@ class Database_Tools:
         return filtered_data['note'].unique().tolist()
         
         
+        
     def list_categories(self, record_type=None, month=None, year=None):
         """
         Lists all categories based on the specified month, year, and record type. 

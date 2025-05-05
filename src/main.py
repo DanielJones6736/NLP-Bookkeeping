@@ -34,7 +34,7 @@ gemini_instructions = \
 "delete_record(record_id:int = None) -> bool, " \
 "get_total_amount_by_type(record_type:str=None) -> float, " \
 "get_monthly_total(record_type:str=None, month:int=None, year:int=None) -> float, " \
-"get_source_list(record_type:str, month:int, year:int) -> list, " \
+"get_notes_list(record_type:str, month:int, year:int) -> list, " \
 "get_category_list(record_type:str, month:int, year:int) -> list, " \
 "get_average_amount(record_type:str, month:int, year:int) -> float, " \
 "get_transaction_history(record_type:str=None, month:int=None, year:int=None, file_format:str='json') -> Any. " \
@@ -66,7 +66,7 @@ def add_expense(amount:float, note:str, category:str, date:str):
         bool: True if the expense was successfully added to the database, False otherwise.
     """
     # Logic to add expense to the database
-    print(f"add_expense has been called with the following parameters: {str(amount)}, {str(note)}, {str(category)}")
+    print(f"add_expense has been called with the following parameters: {str(amount)}, {str(note)}, {str(category)}, {str(date)}")
     return database.insert_data("expense", amount=amount, note=note, category=category, date=date)
 
 
@@ -121,6 +121,7 @@ def update_pay(record_id:int, amount:float=None, note:str=None, category:str=Non
     print(f"update_pay has been called with the following parameters: {str(record_id)}, {str(amount)}, {str(note)}, {str(category)}, {str(date)}")
     return database.update_data(record_type="pay", record_id=record_id, amount=amount, note=note, category=category, date=date)
 
+
 def delete_record(record_id:int = None):
     """
     Deletes a record from the database.
@@ -172,7 +173,7 @@ def get_monthly_total(record_type:str=None, month:int=None, year:int=None):
     return database.calculate_monthly_total(record_type=record_type, month=month, year=year)
 
 
-def get_source_list(record_type:str, month:int, year:int):
+def get_notes_list(record_type:str, month:int, year:int):
     """
     Retrieves a list of notes from the database based on the specified record type, month, and year.
 
@@ -342,6 +343,7 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
     )
 
     # 添加批量添加函数声明
+    # Create a function declaration for the tool
     function_batch_add = types.FunctionDeclaration(
         name="batch_add_records",
         description="批量添加多条交易记录。",
@@ -367,8 +369,6 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
             required=["records"]
         )
     )
-
-    # Create a function declaration for the tool
     function_add_expense = types.FunctionDeclaration(
         name="add_expense",
         description="Add an expense to the database.",
@@ -572,7 +572,7 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
             "delete_record": delete_record,
             "get_total_amount_by_type": get_total_amount_by_type,
             "get_monthly_total": get_monthly_total,
-            "get_source_list": get_source_list,
+            "get_notes_list": get_notes_list,
             "get_category_list": get_category_list,
             "get_average_amount": get_average_amount,
             "get_transaction_history": get_transaction_history,
