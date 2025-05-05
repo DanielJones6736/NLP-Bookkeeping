@@ -1,5 +1,6 @@
 from src.config import gemini_api_key
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from google import genai
 from google.genai import types
 from src import database_tools
@@ -7,96 +8,115 @@ from src import database_tools
 
 
 app = FastAPI()
+
+# 添加CORS中间件
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 允许所有源，生产环境建议指定具体域名
+    allow_credentials=True,
+    allow_methods=["*"],  # 允许所有HTTP方法
+    allow_headers=["*"],  # 允许所有请求头
+)
+
 database = database_tools.Database_Tools()
 
 gemini_instructions = \
 "You are being used in a bookkeeping personal finance app to perform CRUD operations to a database." \
 " Based on the user input you must choose the appropriate function and populate its parameters. " \
 "The functions are: " \
-"add_expense(amount:float, location:str, date:str) -> bool, " \
-"add_pay(amount:float, source:str, date:str) -> bool, " \
-"update_expense(record_id:int, amount:float=None, location:str=None, date:str=None) -> bool, " \
-"update_pay(record_id:int, amount:float=None, source:str=None, date:str=None) -> bool, " \
+"add_expense(amount:float, note:str, category:str, date:str) -> bool, " \
+"add_pay(amount:float, note:str, category:str, date:str) -> bool, " \
+"update_expense(record_id:int, amount:float=None, note:str=None, category:str=None, date:str=None) -> bool, " \
+"update_pay(record_id:int, amount:float=None, note:str=None, category:str=None, date:str=None) -> bool, " \
 "delete_record(record_id:int = None) -> bool, " \
 "get_total_amount_by_type(record_type:str=None) -> float, " \
 "get_monthly_total(record_type:str=None, month:int=None, year:int=None) -> float, " \
 "get_source_list(record_type:str, month:int, year:int) -> list, " \
+"get_category_list(record_type:str, month:int, year:int) -> list, " \
 "get_average_amount(record_type:str, month:int, year:int) -> float, " \
 "get_transaction_history(record_type:str=None, month:int=None, year:int=None, file_format:str='json') -> Any. " \
 "ai_analyze(record_type:str, month:int, year:int, question:str) -> Any. " \
+"batch_add_records(records:list) -> dict, " \
 "For any prompt that doesn't fall into any of the functions above, call the ai_analyze function. " \
 "Make sure to only use the parameters that are needed for the function. " \
 "For delete_record, if the latest record is to be deleted, then record_id should be None or the ID of the record. " \
-"If no user input is provided, use the parameter value None " \
-"Try to convert relative dates into absolute dates. Example, tody equals yyyy-mm-dd" \
+"If no user input is provided, use the parameter value None. " \
+"Try to convert relative dates into absolute dates. Example, today equals yyyy-mm-dd. " \
+"For expenses, use appropriate categories from: Food, Groceries, Transportation, Housing, Entertainment, Shopping, Utilities, Health, Education, Travel, Other. " \
+"For income, use appropriate categories from: Salary, Bonus, Gift, Investment, Refund, Other. " \
+"If the user input contains multiple transactions, use batch_add_records function with array of records. Each record must contain all required fields. " \
 "User prompt: "
 
 
 
-def add_expense(amount:float, source:str, date:str):
+def add_expense(amount:float, note:str, category:str, date:str):
     """
     Adds an expense record to the database.
 
     Args:
         amount (float): The monetary value of the expense.
-        source (str): The source where the expense occurred.
+        note (str): The note describing the expense.
+        category (str): The category of the expense.
         date (str): The date of the expense in string format (e.g., 'YYYY-MM-DD').
 
     Returns:
         bool: True if the expense was successfully added to the database, False otherwise.
     """
     # Logic to add expense to the database
-    print(f"add_expense has been called with the following parameters: {str(amount)}, {str(source)}")
-    return database.insert_data("expense", amount=amount, source=source, date=date)
+    print(f"add_expense has been called with the following parameters: {str(amount)}, {str(note)}, {str(category)}")
+    return database.insert_data("expense", amount=amount, note=note, category=category, date=date)
 
 
-def add_pay(amount: float, source: str, date: str):
+def add_pay(amount: float, note: str, category: str, date: str):
     """
     Adds a payment record to the database.
     Args:
         amount (float): The amount of the payment.
-        source (str): The source or description of the payment.
+        note (str): The note or description of the payment.
+        category (str): The category of the payment.
         date (str): The date of the payment in string format.
     Returns:
         bool: True if the payment was successfully added to the database, False otherwise.
     """
     # Logic to add payment to the database
-    print(f"add_pay has been called with the following parameters: {str(amount)}, {str(source)}, {str(date)}")
-    return database.insert_data("pay", amount=amount, source=source, date=date)
+    print(f"add_pay has been called with the following parameters: {str(amount)}, {str(note)}, {str(category)}, {str(date)}")
+    return database.insert_data("pay", amount=amount, note=note, category=category, date=date)
 
 
-def update_expense(record_id:int, amount:float=None, source:str=None, date:str=None):
+def update_expense(record_id:int, amount:float=None, note:str=None, category:str=None, date:str=None):
     """
     Parameters:
         record_id (int): The unique identifier of the expense record to update.
         amount (float, optional): The new amount for the expense. Defaults to None.
-        location (str, optional): The new location associated with the expense. Defaults to None.
+        note (str, optional): The new note associated with the expense. Defaults to None.
+        category (str, optional): The new category of the expense. Defaults to None.
         date (str, optional): The new date of the expense in 'YYYY-MM-DD' format. Defaults to None.
 
     Returns:
         bool: True if the update was successful, False otherwise.
     """
     # Logic to update expense in the database
-    print(f"update_expense has been called with the following parameters: {str(record_id)}, {str(amount)}, {str(source)}, {str(date)}")
-    return database.update_data(record_type="expense", record_id=record_id, amount=amount, source=source, date=date)
+    print(f"update_expense has been called with the following parameters: {str(record_id)}, {str(amount)}, {str(note)}, {str(category)}, {str(date)}")
+    return database.update_data(record_type="expense", record_id=record_id, amount=amount, note=note, category=category, date=date)
 
 
-def update_pay(record_id:int, amount:float=None, source:str=None, date:str=None):
+def update_pay(record_id:int, amount:float=None, note:str=None, category:str=None, date:str=None):
     """
     Updates an existing payment record in the database.
 
     Args:
         record_id (int): The unique identifier of the payment record to update.
         amount (float, optional): The new payment amount. Defaults to None.
-        source (str, optional): The source or description of the payment. Defaults to None.
+        note (str, optional): The note or description of the payment. Defaults to None.
+        category (str, optional): The category of the payment. Defaults to None.
         date (str, optional): The date of the payment in string format. Defaults to None.
 
     Returns:
         bool: True if the update was successful, False otherwise.
     """
     # Logic to update payment in the database
-    print(f"update_pay has been called with the following parameters: {str(record_id)}, {str(amount)}, {str(source)}, {str(date)}")
-    return database.update_data(record_type="pay", record_id=record_id, amount=amount, source=source, date=date)
+    print(f"update_pay has been called with the following parameters: {str(record_id)}, {str(amount)}, {str(note)}, {str(category)}, {str(date)}")
+    return database.update_data(record_type="pay", record_id=record_id, amount=amount, note=note, category=category, date=date)
 
 def delete_record(record_id:int = None):
     """
@@ -151,23 +171,36 @@ def get_monthly_total(record_type:str=None, month:int=None, year:int=None):
 
 def get_source_list(record_type:str, month:int, year:int):
     """
-    Retrieves a list of sources from the database based on the specified record type, month, and year.
+    Retrieves a list of notes from the database based on the specified record type, month, and year.
 
     Args:
-        record_type (str): The type of record to filter the sources (e.g., 'financial', 'academic').
-        month (int): The month for which to retrieve the sources (1-12).
-        year (int): The year for which to retrieve the sources.
+        record_type (str): The type of record to filter the notes (e.g., 'expense', 'pay').
+        month (int): The month for which to retrieve the notes (1-12).
+        year (int): The year for which to retrieve the notes.
 
     Returns:
-        list: A list of sources retrieved from the database matching the specified criteria.
-
-    Raises:
-        ValueError: If the provided arguments are invalid or out of range.
-        DatabaseError: If there is an issue connecting to or querying the database.
+        list: A list of notes retrieved from the database matching the specified criteria.
     """
-    # Logic to get source list from the database
+    # Logic to get note list from the database
     print(f"get_source_list has been called with the following parameters: {str(record_type)}, {str(month)}, {str(year)}")
-    return database.list_sources(record_type=record_type, month=month, year=year)
+    return database.list_notes(record_type=record_type, month=month, year=year)
+
+
+def get_category_list(record_type:str, month:int, year:int):
+    """
+    Retrieves a list of categories from the database based on the specified record type, month, and year.
+
+    Args:
+        record_type (str): The type of record to filter the categories (e.g., 'expense', 'pay').
+        month (int): The month for which to retrieve the categories (1-12).
+        year (int): The year for which to retrieve the categories.
+
+    Returns:
+        list: A list of categories retrieved from the database matching the specified criteria.
+    """
+    # Logic to get category list from the database
+    print(f"get_category_list has been called with the following parameters: {str(record_type)}, {str(month)}, {str(year)}")
+    return database.list_categories(record_type=record_type, month=month, year=year)
 
 
 def get_average_amount(record_type:str, month:int, year:int):
@@ -258,6 +291,33 @@ def ai_analyze(question: str, record_type:str=None, month:int=None, year:int=Non
     return {"status": "success", "analysis": analysis_result}
 
 
+def batch_add_records(records):
+    """
+    批量添加多条交易记录。
+
+    Args:
+        records (list): 包含多条记录数据的列表，每条记录应包含：
+                       type, amount, note, category, date
+
+    Returns:
+        dict: 包含操作结果和添加的记录ID列表
+    """
+    print(f"batch_add_records has been called with {len(records)} records")
+    try:
+        # 确保所有数值都是Python原生类型
+        for record in records:
+            if 'amount' in record:
+                record['amount'] = float(record['amount'])
+        
+        added_ids = database.batch_insert_data(records)
+        
+        # 确保返回的ID是Python原生类型
+        added_ids = [int(id) for id in added_ids]
+        
+        return {"status": "success", "message": f"成功添加{len(added_ids)}条记录", "record_ids": added_ids}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 @app.get("/")
 async def root():
@@ -278,6 +338,33 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
         api_key=gemini_api_key,
     )
 
+    # 添加批量添加函数声明
+    function_batch_add = types.FunctionDeclaration(
+        name="batch_add_records",
+        description="批量添加多条交易记录。",
+        parameters=types.Schema(
+            type="OBJECT",
+            properties={
+                "records": types.Schema(
+                    type="ARRAY",
+                    description="包含多条记录数据的列表，每条记录需包含type, amount, note, category, date",
+                    items=types.Schema(
+                        type="OBJECT",
+                        properties={
+                            "type": types.Schema(type="STRING", description="记录类型 ('expense' 或 'pay')"),
+                            "amount": types.Schema(type="NUMBER", description="交易金额"),
+                            "note": types.Schema(type="STRING", description="交易说明"),
+                            "category": types.Schema(type="STRING", description="交易分类"),
+                            "date": types.Schema(type="STRING", description="交易日期")
+                        },
+                        required=["type", "amount", "note", "category", "date"]
+                    )
+                )
+            },
+            required=["records"]
+        )
+    )
+
     # Create a function declaration for the tool
     function_add_expense = types.FunctionDeclaration(
         name="add_expense",
@@ -286,10 +373,11 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
             type="OBJECT",
             properties={
                 "amount": types.Schema(type="NUMBER", description="The amount of the expense."),
-                "source": types.Schema(type="STRING", description="The source of the expense."),
+                "note": types.Schema(type="STRING", description="The note describing the expense."),
+                "category": types.Schema(type="STRING", description="The category of the expense."),
                 "date": types.Schema(type="STRING", description="The date of the expense."),
             },
-            required=["amount", "source", "date"],
+            required=["amount", "note", "category", "date"],
         ),
     )
     function_add_pay = types.FunctionDeclaration(
@@ -299,10 +387,11 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
             type="OBJECT",
             properties={
                 "amount": types.Schema(type="NUMBER", description="The amount of the payment."),
-                "source": types.Schema(type="STRING", description="The source of the payment."),
+                "note": types.Schema(type="STRING", description="The note describing the payment."),
+                "category": types.Schema(type="STRING", description="The category of the payment."),
                 "date": types.Schema(type="STRING", description="The date of the expense."),
             },
-            required=["amount", "source", "date"],
+            required=["amount", "note", "category", "date"],
         ),
     )
     function_update_expense = types.FunctionDeclaration(
@@ -313,7 +402,8 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
             properties={
                 "record_id": types.Schema(type="NUMBER", description="The ID of the record to update."),
                 "amount": types.Schema(type="NUMBER", description="The new amount of the expense."),
-                "source": types.Schema(type="STRING", description="The new source of the expense."),
+                "note": types.Schema(type="STRING", description="The new note for the expense."),
+                "category": types.Schema(type="STRING", description="The new category of the expense."),
                 "date": types.Schema(type="STRING", description="The new date of the expense."),
             },
             required=["record_id"],
@@ -327,7 +417,8 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
             properties={
                 "record_id": types.Schema(type="NUMBER", description="The ID of the record to update."),
                 "amount": types.Schema(type="NUMBER", description="The new amount of the payment."),
-                "source": types.Schema(type="STRING", description="The new source of the payment."),
+                "note": types.Schema(type="STRING", description="The new note for the payment."),
+                "category": types.Schema(type="STRING", description="The new category of the payment."),
                 "date": types.Schema(type="STRING", description="The new date of the payment."),
             },
             required=["record_id"],
@@ -370,13 +461,26 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
     )
     function_get_source_list = types.FunctionDeclaration(
         name="get_source_list",
-        description="Get the list of sources from the database.",
+        description="Get the list of notes from the database.",
         parameters=types.Schema(
             type="OBJECT",
             properties={
                 "record_type": types.Schema(type="STRING", description="The type of the record ('expense' or 'pay')."),
-                "month": types.Schema(type="NUMBER", description="The month for which to get the sources."),
-                "year": types.Schema(type="NUMBER", description="The year for which to get the sources."),
+                "month": types.Schema(type="NUMBER", description="The month for which to get the notes."),
+                "year": types.Schema(type="NUMBER", description="The year for which to get the notes."),
+            },
+            required=[],
+        ),
+    )
+    function_get_category_list = types.FunctionDeclaration(
+        name="get_category_list",
+        description="Get the list of categories from the database.",
+        parameters=types.Schema(
+            type="OBJECT",
+            properties={
+                "record_type": types.Schema(type="STRING", description="The type of the record ('expense' or 'pay')."),
+                "month": types.Schema(type="NUMBER", description="The month for which to get the categories."),
+                "year": types.Schema(type="NUMBER", description="The year for which to get the categories."),
             },
             required=[],
         ),
@@ -423,6 +527,7 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
         ),
     )
     tool = types.Tool(function_declarations=[
+        function_batch_add,
         function_add_expense, 
         function_add_pay,
         function_update_expense,
@@ -431,6 +536,7 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
         function_get_total_amount,
         function_get_monthly_total,
         function_get_source_list,
+        function_get_category_list,
         function_get_average_amount,
         function_get_transaction_history,
         function_ai_analyze
@@ -455,6 +561,7 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
         # Refactor the function call handling using a dictionary-based switch
         # Define a mapping of function names to their corresponding handlers
         function_mapping = {
+            "batch_add_records": batch_add_records,
             "add_expense": add_expense,
             "add_pay": add_pay,
             "update_expense": update_expense,
@@ -463,6 +570,7 @@ async def genai_api(prompt:str, max_output_tokens:int=512):
             "get_total_amount_by_type": get_total_amount_by_type,
             "get_monthly_total": get_monthly_total,
             "get_source_list": get_source_list,
+            "get_category_list": get_category_list,
             "get_average_amount": get_average_amount,
             "get_transaction_history": get_transaction_history,
             "ai_analyze": ai_analyze,

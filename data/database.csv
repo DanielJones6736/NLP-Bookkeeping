@@ -1,48 +1,49 @@
-id,type,amount,source,date
-1,expense,-200.0,Updated Source,2023-10-02
-2,pay,1500.0,Salary,2025-01-02
-3,expense,-200.0,Rent,2025-01-03
-4,expense,-30.0,Utilities,2025-01-04
-5,pay,200.0,Freelance Work,2025-01-05
-6,expense,-15.0,Transportation,2025-01-06
-7,expense,-100.0,Shopping,2025-01-07
-8,pay,500.0,Bonus,2025-01-08
-9,expense,-25.0,Entertainment,2025-01-09
-10,expense,-60.0,Internet,2025-01-10
-11,expense,-45.0,Gas,2025-01-11
-12,pay,300.0,Gift,2025-01-12
-13,expense,-75.0,Medical,2025-01-13
-14,expense,-20.0,Snacks,2025-01-14
-15,pay,1000.0,Investment Return,2025-01-15
-16,expense,-50.0,Subscription,2025-01-16
-17,expense,-90.0,Clothing,2025-01-17
-18,pay,250.0,Part-time Job,2025-03-18
-19,expense,-35.0,Books,2025-01-18
-20,expense,-40.0,Parking,2025-01-19
-21,expense,-120.0,Groceries,2025-01-20
-22,pay,400.0,Freelance Project,2025-01-21
-23,expense,-55.0,Pet Supplies,2025-01-22
-24,expense,-80.0,Home Maintenance,2025-01-23
-25,pay,600.0,Consulting,2025-01-24
-26,expense,-45.0,Movies,2025-01-25
-27,expense,-25.0,Coffee,2025-01-26
-28,pay,700.0,Contract Work,2025-01-27
-29,expense,-30.0,Fast Food,2025-01-28
-30,expense,-100.0,Electronics,2025-01-29
-31,pay,800.0,Freelance Design,2025-01-30
-32,expense,-15.0,Stationery,2025-01-31
-33,expense,-70.0,Haircut,2025-02-01
-34,pay,500.0,Side Hustle,2025-02-02
-35,expense,-25.0,Parking,2025-02-03
-36,expense,-90.0,Concert Tickets,2025-02-04
-37,pay,300.0,Online Sales,2025-02-05
-38,expense,-40.0,Public Transport,2025-02-06
-39,expense,-60.0,Streaming Services,2025-02-07
-40,expense,-85.0,Gift Shopping,2025-02-08
-41,expense,-100.5,Groceries,2023-10-01
-42,expense,-100.5,Groceries,2023-10-01
-43,expense,-100.5,Groceries,2023-10-01
-44,pay,1000.00,Work,2023-10-01
-45,expense,-100.5,Dinner,2023-10-01
-46,pay,-100.5,Nightclub,2023-10-01
-47,expense,-100.0,Walmart,2025-05-03
+id,type,amount,note,category,date
+1,expense,-200.0,Updated Source,Shopping,2023-10-02
+2,pay,1500.0,Monthly Income,Salary,2025-01-02
+3,expense,-200.0,Monthly Rent,Housing,2025-01-03
+4,expense,-30.0,Electric Bill,Utilities,2025-01-04
+5,pay,200.0,Project Payment,Other,2025-01-05
+6,expense,-15.0,Bus Fare,Transportation,2025-01-06
+7,expense,-100.0,New Clothes,Shopping,2025-01-07
+8,pay,500.0,Performance Bonus,Bonus,2025-01-08
+9,expense,-25.0,Movie Tickets,Entertainment,2025-01-09
+10,expense,-60.0,Internet Bill,Utilities,2025-01-10
+11,expense,-45.0,Car Fuel,Transportation,2025-01-11
+12,pay,300.0,Birthday Money,Gift,2025-01-12
+13,expense,-75.0,Doctor Visit,Health,2025-01-13
+14,expense,-20.0,Office Snacks,Food,2025-01-14
+15,pay,1000.0,Stock Dividends,Investment,2025-01-15
+16,expense,-50.0,Software License,Other,2025-01-16
+17,expense,-90.0,Winter Jacket,Shopping,2025-01-17
+18,pay,250.0,Weekend Work,Other,2025-03-18
+19,expense,-35.0,Textbooks,Education,2025-01-18
+20,expense,-40.0,Downtown Parking,Transportation,2025-01-19
+21,expense,-120.0,Weekly Shopping,Groceries,2025-01-20
+22,pay,400.0,Design Gig,Other,2025-01-21
+23,expense,-55.0,Dog Food,Other,2025-01-22
+24,expense,-80.0,Plumbing Repair,Housing,2025-01-23
+25,pay,600.0,Client Project,Other,2025-01-24
+26,expense,-45.0,Cinema Tickets,Entertainment,2025-01-25
+27,expense,-25.0,Cafe Visit,Food,2025-01-26
+28,pay,700.0,Programming Work,Other,2025-01-27
+29,expense,-30.0,Lunch Takeout,Food,2025-01-28
+30,expense,-100.0,Headphones,Shopping,2025-01-29
+31,pay,800.0,Logo Design,Other,2025-01-30
+32,expense,-15.0,Pens and Notebooks,Education,2025-01-31
+33,expense,-70.0,Salon Visit,Other,2025-02-01
+34,pay,500.0,Etsy Shop Sales,Other,2025-02-02
+35,expense,-25.0,Airport Parking,Transportation,2025-02-03
+36,expense,-90.0,Music Festival,Entertainment,2025-02-04
+37,pay,300.0,Ebay Sales,Other,2025-02-05
+38,expense,-40.0,Monthly Transit Pass,Transportation,2025-02-06
+39,expense,-60.0,Netflix and Spotify,Entertainment,2025-02-07
+41,expense,-100.5,Weekly Groceries,Groceries,2023-10-01
+42,expense,-100.5,Weekly Groceries,Groceries,2023-10-01
+43,expense,-100.5,Weekly Groceries,Groceries,2023-10-01
+44,pay,1000.0,Monthly Salary,Salary,2023-10-01
+45,expense,-100.5,Restaurant Dinner,Food,2023-10-01
+46,expense,-100.5,Cover Charge,Health,2023-10-01
+47,expense,-999.0,Household Items,Shopping,2025-5-1
+48,expense,-111.0,test,Food,2025-05-03
+49,expense,-111.0,test,Food,2025-05-04

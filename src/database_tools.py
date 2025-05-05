@@ -59,14 +59,15 @@ class Database_Tools:
 
 
 
-    def insert_data(self, record_type, amount, source:str, date:str):
+    def insert_data(self, record_type, amount, note:str, category:str, date:str):
         """
         Adds a new record to the DataFrame.
 
         Args:
             record_type (str): The type of the record.
             amount (float): The amount associated with the record.
-            source (str): The source of the record.
+            note (str): The note for the record.
+            category (str): The category of the record.
             date (str): The date of the record.
 
         Raises:
@@ -93,17 +94,18 @@ class Database_Tools:
             'id': new_id,
             'type': record_type,
             'amount': f"{amount:.2f}",
-            'source': source,
+            'note': note,
+            'category': category,
             'date': date
         }])
         self.data = pd.concat([self.data, new_record], ignore_index=True)
         self.current_total = self.calculate_total_amount()
         self.save_database()
-        return f"Record added successfully. ID: {new_id}, Type: {record_type}, Amount: {amount:.2f}, Source: {source}, Date: {date}"
+        return f"Record added successfully. ID: {new_id}, Type: {record_type}, Amount: {amount:.2f}, Note: {note}, Category: {category}, Date: {date}"
 
 
 
-    def update_data(self, record_id:int=None, record_type:str=None, amount:float=None, source:str=None, date:str=None):
+    def update_data(self, record_id:int=None, record_type:str=None, amount:float=None, note:str=None, category:str=None, date:str=None):
         """
         Updates an existing record in the DataFrame.
 
@@ -111,7 +113,8 @@ class Database_Tools:
             record_id (int): The unique identifier for the record to update.
             record_type (str, optional): The new type of the record.
             amount (float, optional): The new amount associated with the record.
-            source (str, optional): The new source of the record.
+            note (str, optional): The new note for the record.
+            category (str, optional): The new category of the record.
             date (str, optional): The new date of the record.
 
         Raises:
@@ -131,21 +134,24 @@ class Database_Tools:
 
         if amount is not None:
             try:
-                if record_type.lower() == 'expense':
+                if record_type and record_type.lower() == 'expense':
                     amount = -abs(float(amount))
                 self.data.loc[self.data['id'] == record_id, 'amount'] = f"{float(amount):.2f}"
             except ValueError:
                 raise ValueError("The amount must be a valid number.")
             
-        if source is not None:
-            self.data.loc[self.data['id'] == record_id, 'source'] = source
+        if note is not None:
+            self.data.loc[self.data['id'] == record_id, 'note'] = note
+            
+        if category is not None:
+            self.data.loc[self.data['id'] == record_id, 'category'] = category
 
         if date is not None:
             self.data.loc[self.data['id'] == record_id, 'date'] = date
 
         self.current_total = self.calculate_total_amount()
         self.save_database()
-        return f"Record with ID {str(record_id)} updated successfully with Type: {str(record_type)}, Amount: {str(amount)}, Source: {str(source)}, Date: {str(date)}"
+        return f"Record with ID {str(record_id)} updated successfully with Type: {str(record_type)}, Amount: {str(amount)}, Note: {str(note)}, Category: {str(category)}, Date: {str(date)}"
 
 
 
@@ -216,18 +222,18 @@ class Database_Tools:
 
 
 
-    def list_sources(self, record_type=None, month=None, year=None):
+    def list_notes(self, record_type=None, month=None, year=None):
         """
-        Lists all sources based on the specified month, year, and record type. 
-        If no filters are provided, lists all sources.
+        Lists all notes based on the specified month, year, and record type. 
+        If no filters are provided, lists all notes.
 
         Args:
-            month (int, optional): The month for which to list sources (1-12).
-            year (int, optional): The year for which to list sources.
+            month (int, optional): The month for which to list notes (1-12).
+            year (int, optional): The year for which to list notes.
             record_type (str, optional): The type of the record ('expense' or 'payment').
 
         Returns:
-            list: A list of unique sources.
+            list: A list of unique notes.
         """
         filtered_data = self.data
 
@@ -238,7 +244,32 @@ class Database_Tools:
         if record_type is not None:
             filtered_data = filtered_data[filtered_data['type'].str.lower() == record_type.lower()]
 
-        return filtered_data['source'].unique().tolist()
+        return filtered_data['note'].unique().tolist()
+        
+        
+    def list_categories(self, record_type=None, month=None, year=None):
+        """
+        Lists all categories based on the specified month, year, and record type. 
+        If no filters are provided, lists all categories.
+
+        Args:
+            month (int, optional): The month for which to list categories (1-12).
+            year (int, optional): The year for which to list categories.
+            record_type (str, optional): The type of the record ('expense' or 'payment').
+
+        Returns:
+            list: A list of unique categories.
+        """
+        filtered_data = self.data
+
+        if month is not None:
+            filtered_data = filtered_data[(pd.to_datetime(filtered_data['date']).dt.month == month)]
+        if year is not None:
+            filtered_data = filtered_data[pd.to_datetime(filtered_data['date']).dt.year == year]
+        if record_type is not None:
+            filtered_data = filtered_data[filtered_data['type'].str.lower() == record_type.lower()]
+
+        return filtered_data['category'].unique().tolist()
 
 
 
@@ -306,9 +337,67 @@ class Database_Tools:
 
 
 
+    def batch_insert_data(self, records):
+        """
+        批量添加多条记录到数据库。
+
+        Args:
+            records (list): 包含多条记录数据的列表，每条记录应该是一个字典，包含以下键:
+                            'type', 'amount', 'note', 'category', 'date'
+
+        Returns:
+            list: 成功添加的记录ID列表
+        """
+        if not records or not isinstance(records, list):
+            raise ValueError("Records must be a non-empty list")
+            
+        added_ids = []
+        
+        for record in records:
+            if not all(k in record for k in ['type', 'amount', 'note', 'category', 'date']):
+                raise ValueError("Each record must contain type, amount, note, category, and date")
+                
+            try:
+                amount = float(record['amount'])
+                
+                # 如果是支出，转为负数
+                if record['type'].lower() == 'expense':
+                    amount = -abs(amount)
+                    
+                new_id = int(self.data['id'].max() + 1) if not self.data.empty else 1
+                
+                # 转换日期为标准格式
+                try:
+                    date = pd.to_datetime(record['date']).strftime('%Y-%m-%d')
+                except Exception:
+                    raise ValueError(f"Date {record['date']} must be in a valid format (e.g., YYYY-MM-DD).")
+                
+                new_record = pd.DataFrame([{
+                    'id': new_id,
+                    'type': record['type'],
+                    'amount': f"{amount:.2f}",
+                    'note': record['note'],
+                    'category': record['category'],
+                    'date': date
+                }])
+                
+                self.data = pd.concat([self.data, new_record], ignore_index=True)
+                added_ids.append(int(new_id))  # 转换为普通Python int类型
+                
+            except ValueError as e:
+                raise ValueError(f"Error processing record: {e}")
+        
+        # 保存数据并更新总额
+        self.current_total = self.calculate_total_amount()
+        self.save_database()
+        
+        return added_ids
+
+
+
 if __name__ == "__main__":
     database = Database_Tools()
-    database.insert_data("expense", 100.50, "Groceries", "2023-10-01")
+    database.insert_data("expense", 100.50, "Monthly groceries", "Groceries", "2023-10-01")
     print(database)
 
     print(f"Sum of amounts: ${database.current_total}")
@@ -316,7 +405,7 @@ if __name__ == "__main__":
     print(f"Monthly Total for October 2023: ${database.calculate_monthly_total('expense', 10, 2023)}")
     print("\n")
     print("\n")
-    print(database.list_sources(month=2, year=2025, record_type="pay"))
+    print(database.list_notes(month=2, year=2025, record_type="pay"))
     print(f"Average Amount for October 2023: ${database.calculate_average_amount(month=2, year=2025)}")
 
     print("\n")
