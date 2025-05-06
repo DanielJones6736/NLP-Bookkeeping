@@ -44,7 +44,7 @@ gemini_instructions = \
 "Make sure to only use the parameters that are needed for the function. " \
 "For delete_record, if the latest record is to be deleted, then record_id should be None or the ID of the record. " \
 "If no user input is provided, use the parameter value None. " \
-"Try to convert relative dates into absolute dates. Example, today equals yyyy-mm-dd. " \
+"Try to convert relative dates into absolute dates. Example, today equals yyyy/mm/sdd. " \
 "For expenses, use appropriate categories from: Food, Groceries, Transportation, Housing, Entertainment, Shopping, Utilities, Health, Education, Travel, Other. " \
 "For income, use appropriate categories from: Salary, Bonus, Gift, Investment, Refund, Other. " \
 "If the user input contains multiple transactions, use batch_add_records function with array of records. Each record must contain all required fields. " \
