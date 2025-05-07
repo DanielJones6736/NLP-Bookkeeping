@@ -1,168 +1,170 @@
 id,type,amount,note,category,date
-42,expense,-100.5,Weekly Groceries,Groceries,2024/10/01
-44,expense,-100.5,Restaurant Dinner,Food,2024/10/01
-45,expense,-100.5,Cover Charge,Health,2024/10/01
-1,expense,-200.0,Updated Source,Shopping,2024/10/02
-43,pay,1000.0,Monthly Income,Salary,2024/10/02
-101,expense,-200.0,Monthly Rent,Housing,2024/10/03
-102,expense,-50.0,Car Fuel,Transportation,2024/10/10
-103,pay,1000.0,Monthly Income,Salary,2024/11/02
-104,expense,-200.0,Monthly Rent,Housing,2024/11/03
-105,expense,-110.0,Weekly Groceries,Groceries,2024/11/16
-106,pay,1000.0,Monthly Income,Salary,2024/12/02
-107,expense,-200.0,Monthly Rent,Housing,2024/12/03
-108,pay,500.0,Christmas Bonus,Bonus,2024/12/20
-2,pay,1500.0,Monthly Income,Salary,2025/01/02
-3,expense,-200.0,Monthly Rent,Housing,2025/01/03
-4,expense,-30.0,Electric Bill,Utilities,2025/01/04
-5,pay,200.0,Project Payment,Other,2025/01/05
-6,expense,-15.0,Bus Fare,Transportation,2025/01/06
-7,expense,-100.0,New Clothes,Shopping,2025/01/07
-8,pay,500.0,Performance Bonus,Bonus,2025/01/08
-9,expense,-25.0,Movie Tickets,Entertainment,2025/01/09
-10,expense,-60.0,Internet Bill,Utilities,2025/01/10
-11,expense,-45.0,Car Fuel,Transportation,2025/01/11
-12,pay,300.0,Birthday Money,Gift,2025/01/12
-13,expense,-75.0,Doctor Visit,Health,2025/01/13
-14,expense,-20.0,Office Snacks,Food,2025/01/14
-15,pay,1000.0,Stock Dividends,Investment,2025/01/15
-16,expense,-50.0,Software License,Other,2025/01/16
-17,expense,-90.0,Winter Jacket,Shopping,2025/01/17
-19,expense,-35.0,Textbooks,Education,2025/01/18
-20,expense,-40.0,Downtown Parking,Transportation,2025/01/19
-21,expense,-120.0,Weekly Shopping,Groceries,2025/01/20
-22,pay,400.0,Design Gig,Other,2025/01/21
-23,expense,-55.0,Dog Food,Other,2025/01/22
-24,expense,-80.0,Plumbing Repair,Housing,2025/01/23
-25,pay,600.0,Client Project,Other,2025/01/24
-26,expense,-45.0,Cinema Tickets,Entertainment,2025/01/25
-27,expense,-25.0,Cafe Visit,Food,2025/01/26
-28,pay,700.0,Programming Work,Other,2025/01/27
-29,expense,-30.0,Lunch Takeout,Food,2025/01/28
-30,expense,-100.0,Headphones,Shopping,2025/01/29
-31,pay,800.0,Logo Design,Other,2025/01/30
-32,expense,-15.0,Pens and Notebooks,Education,2025/01/31
-33,expense,-70.0,Salon Visit,Other,2025/02/01
-34,pay,500.0,Etsy Shop Sales,Other,2025/02/02
-35,pay,1500.0,Monthly Income,Salary,2025/02/02
-36,expense,-25.0,Airport Parking,Transportation,2025/02/03
-37,expense,-200.0,Monthly Rent,Housing,2025/02/03
-38,expense,-90.0,Music Festival,Entertainment,2025/02/04
-39,pay,300.0,Ebay Sales,Other,2025/02/05
-40,expense,-40.0,Monthly Transit Pass,Transportation,2025/02/06
-41,expense,-60.0,Netflix and Spotify,Entertainment,2025/02/07
-47,pay,750.0,Consulting Fee,Other,2025/02/08
-48,expense,-120.0,Weekly Groceries,Groceries,2025/02/09
-49,expense,-55.0,Train Tickets,Transportation,2025/02/10
-50,expense,-40.0,Books for Class,Education,2025/02/11
-51,pay,450.0,Freelance Article,Other,2025/02/12
-52,expense,-65.0,New Shoes,Shopping,2025/02/13
-53,expense,-200.0,Apartment Deposit,Housing,2025/02/14
-54,pay,200.0,Valentine's Day Bonus,Bonus,2025/02/14
-55,expense,-30.0,Snacks and Drinks,Food,2025/02/15
-56,pay,900.0,Project Completion Fee,Other,2025/02/16
-57,expense,-70.0,Concert Tickets,Entertainment,2025/02/17
-58,expense,-20.0,Printer Ink,Other,2025/02/18
-59,expense,-100.0,Medical Insurance,Health,2025/02/19
-60,expense,-15.0,Taxi to Airport,Transportation,2025/02/20
-61,pay,300.0,Online Course Payout,Other,2025/02/21
-62,expense,-50.0,Course Enrollment,Education,2025/02/22
-63,expense,-75.0,Gym Membership,Health,2025/02/23
-64,expense,-90.0,New Backpack,Shopping,2025/02/24
-65,expense,-18.0,Fast Food Dinner,Food,2025/02/25
-66,pay,600.0,Weekend Contract,Other,2025/02/26
-67,expense,-40.0,Haircut,Other,2025/02/27
-68,expense,-130.0,Weekly Groceries,Groceries,2025/02/28
-69,expense,-22.0,Streaming Subscriptions,Entertainment,2025/03/01
-70,pay,800.0,Freelance Coding,Other,2025/03/02
-71,pay,1500.0,Monthly Income,Salary,2025/03/02
-72,expense,-12.0,Coffee Shop,Food,2025/03/03
-73,expense,-200.0,Monthly Rent,Housing,2025/03/03
-74,expense,-45.0,Gas Refill,Transportation,2025/03/04
-75,pay,500.0,Client Invoice Paid,Other,2025/03/05
-76,expense,-60.0,Netflix Annual Fee,Entertainment,2025/03/06
-77,expense,-33.0,Notebook and Pens,Education,2025/03/07
-78,expense,-88.0,Therapy Session,Health,2025/03/08
-79,expense,-95.0,Office Chair,Shopping,2025/03/09
-80,pay,1000.0,Corporate Bonus,Bonus,2025/03/10
-81,expense,-110.0,Weekly Groceries,Groceries,2025/03/11
-82,expense,-25.0,Takeout Pizza,Food,2025/03/12
-83,expense,-150.0,Monthly Rent,Housing,2025/03/13
-84,pay,550.0,Workshop Payment,Other,2025/03/14
-85,expense,-35.0,Car Wash,Transportation,2025/03/15
-86,expense,-60.0,Spotify Annual,Entertainment,2025/03/16
-87,expense,-120.0,Winter Coat,Shopping,2025/03/17
-18,pay,250.0,Weekend Work,Other,2025/03/18
-88,pay,300.0,Illustration Work,Other,2025/03/18
-89,expense,-18.0,Subway Fare,Transportation,2025/03/19
-90,expense,-90.0,Dental Cleaning,Health,2025/03/20
-91,expense,-12.0,Snacks During Break,Food,2025/03/21
-92,expense,-100.0,Weekly Groceries,Groceries,2025/03/22
-93,pay,700.0,Weekend Shift Pay,Other,2025/03/23
-94,expense,-45.0,Movie Night,Entertainment,2025/03/24
-95,expense,-75.0,School Supplies,Education,2025/03/25
-96,expense,-22.0,Lunch with Friends,Food,2025/03/26
-97,expense,-200.0,Rent Payment,Housing,2025/03/27
-98,pay,900.0,Freelance UX Project,Other,2025/03/28
-99,pay,1500.0,Monthly Income,Salary,2025/04/02
-100,expense,-200.0,Monthly Rent,Housing,2025/04/03
-111,expense,-80.0,Grocery Shopping,Groceries,2025/04/04
-112,expense,-30.0,Bus Pass,Transportation,2025/04/05
-113,expense,-25.0,Lunch at Cafe,Food,2025/04/06
-114,pay,450.0,Freelance Writing,Other,2025/04/07
-115,expense,-40.0,Streaming Services,Entertainment,2025/04/08
-116,expense,-55.0,Running Shoes,Shopping,2025/04/09
-117,expense,-90.0,Chiropractor Visit,Health,2025/04/10
-118,expense,-18.0,Stationery Supplies,Education,2025/04/11
-119,pay,1200.0,Client Project Payment,Other,2025/04/12
-120,expense,-20.0,Fast Food Dinner,Food,2025/04/13
-121,expense,-100.0,Monthly Groceries,Groceries,2025/04/14
-122,expense,-70.0,Gas for Car,Transportation,2025/04/15
-123,pay,700.0,Side Job Payment,Other,2025/04/16
-124,expense,-35.0,Hair Salon Visit,Other,2025/04/17
-125,expense,-25.0,Book Purchase,Education,2025/04/18
-126,expense,-60.0,Pet Supplies,Other,2025/04/19
-127,expense,-45.0,Music Concert,Entertainment,2025/04/20
-128,expense,-12.0,Coffee Shop Snacks,Food,2025/04/21
-129,pay,800.0,Logo Design Contract,Other,2025/04/22
-130,expense,-33.0,Printer Paper,Other,2025/04/23
-131,expense,-27.0,Parking Fees,Transportation,2025/04/24
-132,expense,-90.0,Monthly Internet Bill,Utilities,2025/04/25
-133,expense,-20.0,Document Printing,Other,2025/04/26
-134,expense,-10.0,Ice Cream,Food,2025/04/27
-135,expense,-50.0,Groceries,Groceries,2025/04/28
-136,expense,-35.0,Uber Ride,Transportation,2025/04/29
-137,expense,-75.0,Gym Membership,Health,2025/04/30
-46,expense,-999.0,Household Items,Shopping,2025/05/01
-138,pay,1500.0,Monthly Income,Salary,2025/05/02
-139,expense,-1200.0,Monthly Rent,Housing,2025/05/03
-140,expense,-30.0,Public Transit Card,Transportation,2025/05/04
-141,expense,-25.0,Sandwich and Juice,Food,2025/05/05
-142,expense,-15.0,Notebook and Pens,Education,2025/05/06
-143,pay,500.0,Marketing Campaign Fee,Other,2025/05/07
-144,expense,-40.0,Spotify & Netflix,Entertainment,2025/05/08
-145,expense,-110.0,New Backpack,Shopping,2025/05/09
-146,expense,-50.0,Pharmacy Bill,Health,2025/05/10
-147,expense,-65.0,Course Enrollment,Education,2025/05/11
-148,pay,1000.0,Etsy Sales Payout,Other,2025/05/12
-149,expense,-18.0,Burger Combo,Food,2025/05/13
-150,expense,-105.0,Weekly Grocery Trip,Groceries,2025/05/14
-151,expense,-22.0,Bike Maintenance,Transportation,2025/05/15
-152,pay,600.0,Web Dev Work,Other,2025/05/16
-153,expense,-32.0,Dry Cleaning,Other,2025/05/17
-154,expense,-28.0,Online Course Material,Education,2025/05/18
-155,expense,-55.0,Dog Grooming,Other,2025/05/19
-156,expense,-60.0,Movie Premiere,Entertainment,2025/05/20
-157,expense,-14.0,Bakery Breakfast,Food,2025/05/21
-158,pay,700.0,Fiverr Payments,Other,2025/05/22
-159,expense,-36.0,Flash Drive and Mouse,Other,2025/05/23
-160,expense,-24.0,Subway Ride,Transportation,2025/05/24
-161,expense,-95.0,Phone Bill,Utilities,2025/05/25
-162,expense,-20.0,Copy & Print Work,Other,2025/05/26
-163,expense,-11.0,Snacks,Food,2025/05/27
-164,expense,-85.0,Household Cleaning,Groceries,2025/05/28
-165,expense,-30.0,Lyft Ride,Transportation,2025/05/29
-166,expense,-70.0,Massage Appointment,Health,2025/05/30
-167,expense,-50.0,Whataburger,Food,2025/05/06
-168,pay,5000.00,Work,Salary,2025-05-06
-169,expense,-50.00,Dinner at McDonalds,Food,2025-05-06
+42,expense,-100.5,Weekly Groceries,Groceries,2024-10-01
+44,expense,-100.5,Restaurant Dinner,Food,2024-10-01
+45,expense,-100.5,Cover Charge,Health,2024-10-01
+1,expense,-200.0,Updated Source,Shopping,2024-10-02
+43,pay,1000.0,Monthly Income,Salary,2024-10-02
+101,expense,-200.0,Monthly Rent,Housing,2024-10-03
+102,expense,-50.0,Car Fuel,Transportation,2024-10-10
+103,pay,1000.0,Monthly Income,Salary,2024-11-02
+104,expense,-200.0,Monthly Rent,Housing,2024-11-03
+105,expense,-110.0,Weekly Groceries,Groceries,2024-11-16
+106,pay,1000.0,Monthly Income,Salary,2024-12-02
+107,expense,-200.0,Monthly Rent,Housing,2024-12-03
+108,pay,500.0,Christmas Bonus,Bonus,2024-12-20
+2,pay,1500.0,Monthly Income,Salary,2025-01-02
+3,expense,-200.0,Monthly Rent,Housing,2025-01-03
+4,expense,-30.0,Electric Bill,Utilities,2025-01-04
+5,pay,200.0,Project Payment,Other,2025-01-05
+6,expense,-15.0,Bus Fare,Transportation,2025-01-06
+7,expense,-100.0,New Clothes,Shopping,2025-01-07
+8,pay,500.0,Performance Bonus,Bonus,2025-01-08
+9,expense,-25.0,Movie Tickets,Entertainment,2025-01-09
+10,expense,-60.0,Internet Bill,Utilities,2025-01-10
+11,expense,-45.0,Car Fuel,Transportation,2025-01-11
+12,pay,300.0,Birthday Money,Gift,2025-01-12
+13,expense,-75.0,Doctor Visit,Health,2025-01-13
+14,expense,-20.0,Office Snacks,Food,2025-01-14
+15,pay,1000.0,Stock Dividends,Investment,2025-01-15
+16,expense,-50.0,Software License,Other,2025-01-16
+17,expense,-90.0,Winter Jacket,Shopping,2025-01-17
+19,expense,-35.0,Textbooks,Education,2025-01-18
+20,expense,-40.0,Downtown Parking,Transportation,2025-01-19
+21,expense,-120.0,Weekly Shopping,Groceries,2025-01-20
+22,pay,400.0,Design Gig,Other,2025-01-21
+23,expense,-55.0,Dog Food,Other,2025-01-22
+24,expense,-80.0,Plumbing Repair,Housing,2025-01-23
+25,pay,600.0,Client Project,Other,2025-01-24
+26,expense,-45.0,Cinema Tickets,Entertainment,2025-01-25
+27,expense,-25.0,Cafe Visit,Food,2025-01-26
+28,pay,700.0,Programming Work,Other,2025-01-27
+29,expense,-30.0,Lunch Takeout,Food,2025-01-28
+30,expense,-100.0,Headphones,Shopping,2025-01-29
+31,pay,800.0,Logo Design,Other,2025-01-30
+32,expense,-15.0,Pens and Notebooks,Education,2025-01-31
+33,expense,-70.0,Salon Visit,Other,2025-02-01
+34,pay,500.0,Etsy Shop Sales,Other,2025-02-02
+35,pay,1500.0,Monthly Income,Salary,2025-02-02
+36,expense,-25.0,Airport Parking,Transportation,2025-02-03
+37,expense,-200.0,Monthly Rent,Housing,2025-02-03
+38,expense,-90.0,Music Festival,Entertainment,2025-02-04
+39,pay,300.0,Ebay Sales,Other,2025-02-05
+40,expense,-40.0,Monthly Transit Pass,Transportation,2025-02-06
+41,expense,-60.0,Netflix and Spotify,Entertainment,2025-02-07
+47,pay,750.0,Consulting Fee,Other,2025-02-08
+48,expense,-120.0,Weekly Groceries,Groceries,2025-02-09
+49,expense,-55.0,Train Tickets,Transportation,2025-02-10
+50,expense,-40.0,Books for Class,Education,2025-02-11
+51,pay,450.0,Freelance Article,Other,2025-02-12
+52,expense,-65.0,New Shoes,Shopping,2025-02-13
+53,expense,-200.0,Apartment Deposit,Housing,2025-02-14
+54,pay,200.0,Valentine's Day Bonus,Bonus,2025-02-14
+55,expense,-30.0,Snacks and Drinks,Food,2025-02-15
+56,pay,900.0,Project Completion Fee,Other,2025-02-16
+57,expense,-70.0,Concert Tickets,Entertainment,2025-02-17
+58,expense,-20.0,Printer Ink,Other,2025-02-18
+59,expense,-100.0,Medical Insurance,Health,2025-02-19
+60,expense,-15.0,Taxi to Airport,Transportation,2025-02-20
+61,pay,300.0,Online Course Payout,Other,2025-02-21
+62,expense,-50.0,Course Enrollment,Education,2025-02-22
+63,expense,-75.0,Gym Membership,Health,2025-02-23
+64,expense,-90.0,New Backpack,Shopping,2025-02-24
+65,expense,-18.0,Fast Food Dinner,Food,2025-02-25
+66,pay,600.0,Weekend Contract,Other,2025-02-26
+67,expense,-40.0,Haircut,Other,2025-02-27
+68,expense,-130.0,Weekly Groceries,Groceries,2025-02-28
+69,expense,-22.0,Streaming Subscriptions,Entertainment,2025-03-01
+70,pay,800.0,Freelance Coding,Other,2025-03-02
+71,pay,1500.0,Monthly Income,Salary,2025-03-02
+72,expense,-12.0,Coffee Shop,Food,2025-03-03
+73,expense,-200.0,Monthly Rent,Housing,2025-03-03
+74,expense,-45.0,Gas Refill,Transportation,2025-03-04
+75,pay,500.0,Client Invoice Paid,Other,2025-03-05
+76,expense,-60.0,Netflix Annual Fee,Entertainment,2025-03-06
+77,expense,-33.0,Notebook and Pens,Education,2025-03-07
+78,expense,-88.0,Therapy Session,Health,2025-03-08
+79,expense,-95.0,Office Chair,Shopping,2025-03-09
+80,pay,1000.0,Corporate Bonus,Bonus,2025-03-10
+81,expense,-110.0,Weekly Groceries,Groceries,2025-03-11
+82,expense,-25.0,Takeout Pizza,Food,2025-03-12
+83,expense,-150.0,Monthly Rent,Housing,2025-03-13
+84,pay,550.0,Workshop Payment,Other,2025-03-14
+85,expense,-35.0,Car Wash,Transportation,2025-03-15
+86,expense,-60.0,Spotify Annual,Entertainment,2025-03-16
+87,expense,-120.0,Winter Coat,Shopping,2025-03-17
+18,pay,250.0,Weekend Work,Other,2025-03-18
+88,pay,300.0,Illustration Work,Other,2025-03-18
+89,expense,-18.0,Subway Fare,Transportation,2025-03-19
+90,expense,-90.0,Dental Cleaning,Health,2025-03-20
+91,expense,-12.0,Snacks During Break,Food,2025-03-21
+92,expense,-100.0,Weekly Groceries,Groceries,2025-03-22
+93,pay,700.0,Weekend Shift Pay,Other,2025-03-23
+94,expense,-45.0,Movie Night,Entertainment,2025-03-24
+95,expense,-75.0,School Supplies,Education,2025-03-25
+96,expense,-22.0,Lunch with Friends,Food,2025-03-26
+97,expense,-200.0,Rent Payment,Housing,2025-03-27
+98,pay,900.0,Freelance UX Project,Other,2025-03-28
+99,pay,1500.0,Monthly Income,Salary,2025-04-02
+100,expense,-200.0,Monthly Rent,Housing,2025-04-03
+111,expense,-80.0,Grocery Shopping,Groceries,2025-04-04
+112,expense,-30.0,Bus Pass,Transportation,2025-04-05
+113,expense,-25.0,Lunch at Cafe,Food,2025-04-06
+114,pay,450.0,Freelance Writing,Other,2025-04-07
+115,expense,-40.0,Streaming Services,Entertainment,2025-04-08
+116,expense,-55.0,Running Shoes,Shopping,2025-04-09
+117,expense,-90.0,Chiropractor Visit,Health,2025-04-10
+118,expense,-18.0,Stationery Supplies,Education,2025-04-11
+119,pay,1200.0,Client Project Payment,Other,2025-04-12
+120,expense,-20.0,Fast Food Dinner,Food,2025-04-13
+121,expense,-100.0,Monthly Groceries,Groceries,2025-04-14
+122,expense,-70.0,Gas for Car,Transportation,2025-04-15
+123,pay,700.0,Side Job Payment,Other,2025-04-16
+124,expense,-35.0,Hair Salon Visit,Other,2025-04-17
+125,expense,-25.0,Book Purchase,Education,2025-04-18
+126,expense,-60.0,Pet Supplies,Other,2025-04-19
+127,expense,-45.0,Music Concert,Entertainment,2025-04-20
+128,expense,-12.0,Coffee Shop Snacks,Food,2025-04-21
+129,pay,800.0,Logo Design Contract,Other,2025-04-22
+130,expense,-33.0,Printer Paper,Other,2025-04-23
+131,expense,-27.0,Parking Fees,Transportation,2025-04-24
+132,expense,-90.0,Monthly Internet Bill,Utilities,2025-04-25
+133,expense,-20.0,Document Printing,Other,2025-04-26
+134,expense,-10.0,Ice Cream,Food,2025-04-27
+135,expense,-50.0,Groceries,Groceries,2025-04-28
+136,expense,-35.0,Uber Ride,Transportation,2025-04-29
+137,expense,-75.0,Gym Membership,Health,2025-04-30
+46,expense,-999.0,Household Items,Shopping,2025-05-01
+138,pay,1500.0,Monthly Income,Salary,2025-05-02
+139,expense,-1200.0,Monthly Rent,Housing,2025-05-03
+140,expense,-30.0,Public Transit Card,Transportation,2025-05-04
+141,expense,-25.0,Sandwich and Juice,Food,2025-05-05
+142,expense,-15.0,Notebook and Pens,Education,2025-05-06
+143,pay,500.0,Marketing Campaign Fee,Other,2025-05-07
+144,expense,-40.0,Spotify & Netflix,Entertainment,2025-05-08
+145,expense,-110.0,New Backpack,Shopping,2025-05-09
+146,expense,-50.0,Pharmacy Bill,Health,2025-05-10
+147,expense,-65.0,Course Enrollment,Education,2025-05-11
+148,pay,1000.0,Etsy Sales Payout,Other,2025-05-12
+149,expense,-18.0,Burger Combo,Food,2025-05-13
+150,expense,-105.0,Weekly Grocery Trip,Groceries,2025-05-14
+151,expense,-22.0,Bike Maintenance,Transportation,2025-05-15
+152,pay,600.0,Web Dev Work,Other,2025-05-16
+153,expense,-32.0,Dry Cleaning,Other,2025-05-17
+154,expense,-28.0,Online Course Material,Education,2025-05-18
+155,expense,-55.0,Dog Grooming,Other,2025-05-19
+156,expense,-60.0,Movie Premiere,Entertainment,2025-05-20
+157,expense,-14.0,Bakery Breakfast,Food,2025-05-21
+158,pay,700.0,Fiverr Payments,Other,2025-05-22
+159,expense,-36.0,Flash Drive and Mouse,Other,2025-05-23
+160,expense,-24.0,Subway Ride,Transportation,2025-05-24
+161,expense,-95.0,Phone Bill,Utilities,2025-05-25
+162,expense,-20.0,Copy & Print Work,Other,2025-05-26
+163,expense,-11.0,Snacks,Food,2025-05-27
+164,expense,-85.0,Household Cleaning,Groceries,2025-05-28
+165,expense,-30.0,Lyft Ride,Transportation,2025-05-29
+166,expense,-70.0,Massage Appointment,Health,2025-05-30
+167,expense,-50.0,Whataburger,Food,2025-05-06
+168,pay,5000.0,Work,Salary,2025-05-06
+169,expense,-50.0,Dinner at McDonalds,Food,2025-05-06
+170,pay,5000.0,Work,Salary,2025-01-01
+171,pay,5000.00,Work,Salary,2025-01-01
