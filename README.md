@@ -3,6 +3,8 @@
 CS 6320 - Natural Language Processing Spring 2025  
 Members: Luoqi Zhao, Daniel Jones, and Ryan Vera
 
+[YouTube Video Link](https://youtu.be/-VRr78dHZ_o)
+
 This project is a Natural Language Processing (NLP) application designed to interact with a simple database using natural language prompts. The project leverages the Gemini framework to process user inputs and execute database operations.
 
 ## Project Overview
